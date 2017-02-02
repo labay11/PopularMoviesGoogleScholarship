@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
         new AlertDialog.Builder(this)
                 .setTitle(R.string.about)
                 .setMessage(R.string.about_message)
-                .setNeutralButton(android.R.string.ok, null)
+                .setPositiveButton(android.R.string.ok, null)
                 .show();
     }
 

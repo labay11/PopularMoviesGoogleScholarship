@@ -11,7 +11,7 @@
     <string name="try_again">Torna-ho a provar</string>
     <string name="no_network">Cap connexió a internet</string>
     <string name="about">Informació</string>
-    <string name="about_message">Aplicació que t\'ajuda a descobrir les pel·lícules més populars, feta pel "Android Developer Nanodegree program". \n\nAuthor: <b>ALM</b></string>
+    <string name="about_message">Aplicació que t\'ajuda a descobrir les pel·lícules més populars, feta pel "Android Developer Nanodegree program". \n\nLauncher icon: \u00A9 2014 IconShow.me \n\nAuthor: <b>ALM</b></string>
     <string name="send_feedback">Envia comentaris</string>
 
     <string name="crash_dialog_title">PopularMovies s\'ha tancat inesperadament</string>
