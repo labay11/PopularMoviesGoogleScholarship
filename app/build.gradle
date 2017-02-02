@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
@@ -10,15 +11,24 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        degub {
+            keyAlias "$debugKeyAlias"
+            keyPassword "$debugKeyPassword"
+            storeFile file("$debugStoreFile")
+            storePassword "$debugStorePassword"
+        }
     }
 
     buildTypes {
         debug {
             minifyEnabled true
             debuggable true
-            applicationIdSuffix '.debug'
+            //applicationIdSuffix '.debug'
             versionNameSuffix ' - debug'
+            signingConfig signingConfigs.debug
 
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
@@ -29,6 +39,15 @@ android {
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+ext {
+    android_support_version="25.1.1"
 }
 
 dependencies {
@@ -38,9 +57,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$android_support_version"
     compile "com.android.support:palette-v7:$android_support_version"
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-
-   // compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile "com.github.florent37:glidepalette:2.0.1"
-
+    // compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.florent37:glidepalette:2.0.1'
     compile 'ch.acra:acra:4.9.0'
 }

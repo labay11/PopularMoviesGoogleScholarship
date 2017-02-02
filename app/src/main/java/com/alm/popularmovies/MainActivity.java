@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
                 loadMovies(PreferenceUtils.SORT_BY_RATE);
                 return true;
 
+            case R.id.item_feedback:
+                sendFeedback();
+                return true;
+
             case R.id.item_about:
                 showAboutDialog();
                 return true;
@@ -168,6 +172,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
                 .setMessage(R.string.about_message)
                 .setNeutralButton(android.R.string.ok, null)
                 .show();
+    }
+
+    private void sendFeedback() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO,
+                Uri.fromParts("mailto", "alm.programming.and@gmail.com", null));
+        intent.putExtra(Intent.EXTRA_SUBJECT, "PopularMovies Feedback");
+        startActivity(intent);
     }
 
     /**

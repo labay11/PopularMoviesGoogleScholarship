@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.alm.popularmovies"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.alm.popularmovies">
 
     <!-- Fetch movies and images from internet -->
     <uses-permission android:name="android.permission.INTERNET" />

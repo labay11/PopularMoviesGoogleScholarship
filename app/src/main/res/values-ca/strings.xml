@@ -12,6 +12,7 @@
     <string name="no_network">Cap connexió a internet</string>
     <string name="about">Informació</string>
     <string name="about_message">Aplicació que t\'ajuda a descobrir les pel·lícules més populars, feta pel "Android Developer Nanodegree program". \n\nAuthor: <b>A. Labay</b></string>
+    <string name="send_feedback">Envia comentaris</string>
 
     <string name="crash_dialog_title">PopularMovies s\'ha tancat inesperadament</string>
     <string name="crash_dialog_text">S\'ha produit un error inesperat que ha provocat el tancament de l\'aplicació. Per ajudar-nos a corregir-lo, enviïns les dades del seu error: tot el que ha de fer és pulsar en Aceptar.</string>

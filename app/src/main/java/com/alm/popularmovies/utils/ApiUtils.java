@@ -61,7 +61,8 @@ public class ApiUtils {
     }
 
     public static ArrayList<Movie> parseMovieListResponse(String response) throws JSONException {
-        Log.i(TAG, "Parsing movies - " + response.substring(50));
+        // TODO: parse errors
+        Log.i(TAG, "Parsing movies - " + response.substring(10));
 
         JSONObject root = new JSONObject(response);
         JSONArray results = root.getJSONArray("results");
@@ -76,7 +77,8 @@ public class ApiUtils {
     }
 
     public static MovieDetails parseMovieDetails(String response) throws JSONException {
-        Log.i(TAG, "Parsing details - " + response.substring(50));
+        // TODO: parse errors
+        Log.i(TAG, "Parsing details - " + response.substring(10));
 
         JSONObject root = new JSONObject(response);
 
