@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_message">S\'ha produit un error de connexió.</string>
+    <string name="error_toast">No s\'han pogut descarregar les dades, torna-ho a provar.</string>
+    <string name="most_popular">Més popular</string>
+    <string name="rating">Valoració</string>
+    <string name="release_date">Data de llançament</string>
+    <string name="sort_by">Ordena per…</string>
+    <string name="synopsis">Argument</string>
+    <string name="top_rated">Més valorades</string>
+    <string name="try_again">Torna-ho a provar</string>
+    <string name="no_network">Cap connexió a internet</string>
+    <string name="about">Informació</string>
+    <string name="about_message">Aplicació que t\'ajuda a descobrir les pel·lícules més populars, feta pel "Android Developer Nanodegree program". \n\nAuthor: <b>A. Labay</b></string>
+
+    <string name="crash_dialog_title">PopularMovies s\'ha tancat inesperadament</string>
+    <string name="crash_dialog_text">S\'ha produit un error inesperat que ha provocat el tancament de l\'aplicació. Per ajudar-nos a corregir-lo, enviïns les dades del seu error: tot el que ha de fer és pulsar en Aceptar.</string>
+    <string name="crash_dialog_comment_prompt">Pot afegir el seus comentaris sobre el problema a continuació:</string>
+    <string name="crash_dialog_ok_toast">Gràcies!</string>
+</resources>

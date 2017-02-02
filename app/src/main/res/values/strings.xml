@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name" translatable="false">PopularMovies</string>
+    <string name="sort_by">Sort by…</string>
+    <string name="most_popular">Most popular</string>
+    <string name="top_rated">Top rated</string>
+    <string name="error_message">Error loading data from the internet.</string>
+    <string name="try_again">Try again</string>
+    <string name="error_toast">Couldn\'t retrieve data, please try again.</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="rating">Rating</string>
+    <string name="release_date">Release Date</string>
+    <string name="no_network">No network connection</string>
+    <string name="about">About</string>
+    <string name="about_message">App that helps you discover the most popular movies, made for the Android Developer Nanodegree program. \n\nAuthor: <b>A. Labay</b></string>
+
+    <string name="crash_dialog_title">PopularMovies has crashed</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast">Thank you!</string>
+</resources>
