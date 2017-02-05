@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">PopularMovies</string>
+    <string name="app_name" translatable="false">Popular Movies</string>
     <string name="sort_by">Sort by…</string>
     <string name="most_popular">Most popular</string>
     <string name="top_rated">Top rated</string>
@@ -18,4 +18,5 @@
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
     <string name="crash_dialog_ok_toast">Thank you!</string>
     <string name="send_feedback">Send feedback</string>
+    <string name="summary_not_available">No summary is available for this language.</string>
 </resources>

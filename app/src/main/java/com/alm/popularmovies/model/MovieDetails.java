@@ -2,6 +2,7 @@ package com.alm.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import java.util.Date;
 
@@ -18,7 +19,7 @@ public class MovieDetails implements Parcelable {
 
     public Date releaseDate;
 
-    public String imagePath;
+    public String posterPath;
 
     public double voteAverage;
 
@@ -27,14 +28,14 @@ public class MovieDetails implements Parcelable {
     public MovieDetails(int movieId,
                         String title,
                         Date releaseDate,
-                        String imagePath,
                         double voteAverage,
-                        String synopsis) {
+                        String synopsis,
+                        String posterPath) {
 
         this.movieId = movieId;
         this.title = title;
         this.releaseDate = releaseDate;
-        this.imagePath = imagePath;
+        this.posterPath = posterPath;
         this.voteAverage = voteAverage;
         this.synopsis = synopsis;
     }
@@ -42,9 +43,13 @@ public class MovieDetails implements Parcelable {
     protected MovieDetails(Parcel in) {
         movieId = in.readInt();
         title = in.readString();
-        imagePath = in.readString();
+        posterPath = in.readString();
         voteAverage = in.readDouble();
         synopsis = in.readString();
+    }
+
+    public boolean hasImage() {
+        return !TextUtils.isEmpty(posterPath) && !posterPath.equals("null");
     }
 
     public static final Creator<MovieDetails> CREATOR = new Creator<MovieDetails>() {
@@ -69,7 +74,7 @@ public class MovieDetails implements Parcelable {
         parcel.writeInt(movieId);
         parcel.writeString(title);
         parcel.writeLong(releaseDate != null ? releaseDate.getTime() : 0);
-        parcel.writeString(imagePath);
+        parcel.writeString(posterPath);
         parcel.writeDouble(voteAverage);
         parcel.writeString(synopsis);
     }

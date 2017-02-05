@@ -1,7 +1,6 @@
 package com.alm.popularmovies.utils;
 
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.alm.popularmovies.BuildConfig;
@@ -31,23 +30,25 @@ public class ApiUtils {
 
     public static final SimpleDateFormat API_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    public static final String IMAGE_SIZE_NORMAL = "w185";
-    public static final String IMAGE_SIZE_LARGE = "w342";
+    public static final String IMAGE_SIZE_SMALL = "w185";
+    public static final String IMAGE_SIZE_NORMAL = "w342";
+    public static final String IMAGE_SIZE_LARGE = "w500";
+    public static final String IMAGE_SIZE_XLARGE = "w780";
 
-    public static Uri buildPopularMoviesUrl(String page) {
+    public static Uri buildPopularMoviesUrl(int page) {
         return ENDPOINT.buildUpon().appendEncodedPath("movie/popular")
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
                 .appendQueryParameter("region", Locale.getDefault().getCountry())
                 .appendQueryParameter("language", Locale.getDefault().getLanguage())
-                .appendQueryParameter("page", TextUtils.isEmpty(page) ? "1" : page).build();
+                .appendQueryParameter("page", "" + page).build();
     }
 
-    public static Uri buildTopRatedMoviesUrl(String page) {
+    public static Uri buildTopRatedMoviesUrl(int page) {
         return ENDPOINT.buildUpon().appendEncodedPath("movie/top_rated")
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
                 .appendQueryParameter("region", Locale.getDefault().getCountry())
                 .appendQueryParameter("language", Locale.getDefault().getLanguage())
-                .appendQueryParameter("page", TextUtils.isEmpty(page) ? "1" : page).build();
+                .appendQueryParameter("page", "" + page).build();
     }
 
     public static Uri buildDetailsUrl(int movieId) {
@@ -90,10 +91,10 @@ public class ApiUtils {
         }
 
         return new MovieDetails(root.getInt("id"),
-                root.getString("title"),
+                root.getString("original_title"),
                 realeseDate,
-                root.getString("backdrop_path"),
                 root.getDouble("vote_average"),
-                root.getString("overview"));
+                root.getString("overview"),
+                root.getString("poster_path"));
     }
 }

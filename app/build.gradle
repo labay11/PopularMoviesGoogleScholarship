@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.alm.popularmovies"
-        minSdkVersion 14
+        minSdkVersion 12
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -20,6 +20,13 @@ android {
             storeFile file("$debugStoreFile")
             storePassword "$debugStorePassword"
         }
+
+        release {
+            keyAlias "$releaseKeyAlias"
+            keyPassword "$releaseKeyPassword"
+            storeFile file("$releaseStoreFile")
+            storePassword "$releaseStorePassword"
+        }
     }
 
     buildTypes {
@@ -30,11 +37,14 @@ android {
             versionNameSuffix ' - debug'
             signingConfig signingConfigs.debug
 
+            proguardFiles 'proguard-rules.pro'
+
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
 
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
@@ -44,6 +54,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 ext {
@@ -52,12 +66,16 @@ ext {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.android.support:support-v4:$android_support_version"
     compile "com.android.support:design:$android_support_version"
     compile "com.android.support:appcompat-v7:$android_support_version"
     compile "com.android.support:recyclerview-v7:$android_support_version"
     compile "com.android.support:palette-v7:$android_support_version"
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-    // compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.florent37:glidepalette:2.0.1'
+
+    compile 'com.github.florent37:picassopalette:2.0.0'
+    //compile 'com.squareup.picasso:picasso:2.5.2'
+    //compile 'com.github.bumptech.glide:glide:3.7.0'
+    //compile 'com.github.florent37:glidepalette:2.0.1'
     compile 'ch.acra:acra:4.9.0'
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error_message">S\'ha produit un error de connexió.</string>
+    <string name="error_message">S\'ha produit un error en la connexió.</string>
     <string name="error_toast">No s\'han pogut descarregar les dades, torna-ho a provar.</string>
     <string name="most_popular">Més popular</string>
     <string name="rating">Valoració</string>
@@ -18,4 +18,5 @@
     <string name="crash_dialog_text">S\'ha produit un error inesperat que ha provocat el tancament de l\'aplicació. Per ajudar-nos a corregir-lo, enviïns les dades del seu error: tot el que ha de fer és pulsar en Aceptar.</string>
     <string name="crash_dialog_comment_prompt">Pot afegir el seus comentaris sobre el problema a continuació:</string>
     <string name="crash_dialog_ok_toast">Gràcies!</string>
+    <string name="summary_not_available">No hi ha cap resum disponible en aquesta llengua.</string>
 </resources>

@@ -23,7 +23,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             // Initialise ACRA
             ACRA.init(this);
         }

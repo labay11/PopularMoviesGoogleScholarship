@@ -9,7 +9,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,9 +20,8 @@ import com.alm.popularmovies.model.MovieDetails;
 import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.utils.NetworkUtils;
 import com.alm.popularmovies.utils.Utils;
-import com.bumptech.glide.Glide;
-import com.github.florent37.glidepalette.BitmapPalette;
-import com.github.florent37.glidepalette.GlidePalette;
+import com.github.florent37.picassopalette.PicassoPalette;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 
@@ -46,6 +48,8 @@ public class DetailsActivity extends AppCompatActivity {
     private ImageView ivPoster;
     private CollapsingToolbarLayout titleView;
     private TextView tvDate, tvRating, tvSummary;
+    private ProgressBar mLoadingView;
+    private View mContent, mErrorView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +63,9 @@ public class DetailsActivity extends AppCompatActivity {
         tvDate = (TextView) findViewById(R.id.tv_date);
         tvRating = (TextView) findViewById(R.id.tv_rating);
         tvSummary = (TextView) findViewById(R.id.tv_summary);
+        mLoadingView = (ProgressBar) findViewById(R.id.progress_bar);
+        mContent = findViewById(R.id.content);
+        mErrorView = findViewById(R.id.container_error);
 
         if (savedInstanceState != null) {
             movieId = savedInstanceState.getInt("saved_movie_id", -1);
@@ -100,27 +107,77 @@ public class DetailsActivity extends AppCompatActivity {
 
         mTask = new DetailsAsyncTask(this);
         mTask.execute(movieId);
+
+        showLoading();
+    }
+
+    public void onTryAgainClicked(View v) {
+        loadDetails();
+    }
+
+    private void showLoading() {
+        mLoadingView.setVisibility(View.VISIBLE);
+        mContent.setVisibility(View.GONE);
+        mErrorView.setVisibility(View.GONE);
+    }
+
+    private void showContent() {
+        mErrorView.setVisibility(View.GONE);
+        Utils.crossfade(mContent, mLoadingView);
+    }
+
+    private void showError() {
+        mErrorView.setVisibility(View.VISIBLE);
+        mContent.setVisibility(View.GONE);
+        mLoadingView.setVisibility(View.GONE);
     }
 
     public void onFinishLoading(MovieDetails details) {
         if (details == null) {
-            Toast.makeText(this, R.string.error_toast, Toast.LENGTH_SHORT).show();
-            finish();
+            showError();
             return;
         }
+
         mDetails = details;
+        populateView();
+        showContent();
+    }
 
+    private void populateView() {
         if (Utils.isPortrait(this))
-            titleView.setTitle(details.title);
+            titleView.setTitle(mDetails.title);
         else
-            ((TextView) findViewById(R.id.tv_title)).setText(details.title);
+            ((TextView) findViewById(R.id.tv_title)).setText(mDetails.title);
 
-        tvDate.setText(DateFormat.getDateInstance().format(details.releaseDate));
-        tvRating.setText(String.format("%.1f", details.voteAverage));
-        tvSummary.setText(details.synopsis);
+        tvDate.setText(DateFormat.getDateInstance().format(mDetails.releaseDate));
+        tvRating.setText(String.format("%.1f", mDetails.voteAverage));
 
-        String url = ApiUtils.getImageUrl(details.imagePath, ApiUtils.IMAGE_SIZE_LARGE);
-        Glide.with(this)
+        if (TextUtils.isEmpty(mDetails.synopsis) || mDetails.synopsis.equals("null"))
+            tvSummary.setText(R.string.summary_not_available);
+        else
+            tvSummary.setText(mDetails.synopsis);
+
+        if (!mDetails.hasImage()) {
+            ivPoster.setVisibility(View.GONE);
+            return;
+        }
+
+        String url = ApiUtils.getImageUrl(mDetails.posterPath, ApiUtils.IMAGE_SIZE_LARGE);
+        Picasso.with(this)
+                .load(url)
+                .into(ivPoster,
+                        PicassoPalette.with(url, ivPoster)
+                                .intoCallBack(new PicassoPalette.CallBack() {
+                                    @Override
+                                    public void onPaletteLoaded(Palette palette) {
+                                        if (palette != null && Utils.isPortrait(DetailsActivity.this)) {
+                                            int textColor = palette.getLightVibrantColor(Color.WHITE);
+                                            titleView.setExpandedTitleColor(textColor);
+                                            titleView.setCollapsedTitleTextColor(Color.WHITE);
+                                        }
+                                    }
+                                }));
+        /*Glide.with(this)
                 .load(url)
                 .listener(GlidePalette.with(url)
                         .intoCallBack(new BitmapPalette.CallBack() {
@@ -134,7 +191,7 @@ public class DetailsActivity extends AppCompatActivity {
                             }
                         })
                 )
-                .into(ivPoster);
+                .into(ivPoster);*/
     }
 
     @Override

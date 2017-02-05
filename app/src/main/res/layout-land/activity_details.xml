@@ -6,13 +6,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".DetailsActivity"
     tools:layout_editor_absoluteY="25dp"
     tools:layout_editor_absoluteX="0dp">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="0dp"
-        android:layout_height="96dp"
+        android:layout_height="wrap_content"
+        android:minHeight="96dp"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="4dp"
@@ -20,8 +22,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -36,8 +37,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,13 +59,13 @@
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
         android:maxLines="1"
+        android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
         android:textSize="28sp"
         tools:text="Back to the future"
         app:layout_constraintBottom_toBottomOf="@+id/appbar"
         app:layout_constraintLeft_toRightOf="@+id/iv_backdrop"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"/>
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <ScrollView
         android:layout_width="0dp"
@@ -80,66 +81,25 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:text="@string/release_date"
-                android:layout_marginBottom="8dp"/>
+            <include layout="@layout/include_movie_details"
+                     android:id="@+id/content"
+                     android:visibility="gone"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_date"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                tools:text="11/11/1111"/>
+            <include layout="@layout/include_error"
+                     android:id="@+id/container_error"
+                     android:visibility="gone" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#607D8B"
-                android:layout_margin="8dp"/>
+            <ProgressBar
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/progress_bar"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:text="@string/rating"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_rating"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                tools:text="9.9"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#607D8B"
-                android:layout_margin="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:text="@string/synopsis"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_summary"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                tools:text="Lorem impum dolor..."
-                android:fontFamily="monospace"/>
-        </LinearLayout>
+        </FrameLayout>
     </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

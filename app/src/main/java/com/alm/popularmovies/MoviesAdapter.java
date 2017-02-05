@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.alm.popularmovies.model.Movie;
 import com.alm.popularmovies.utils.ApiUtils;
-import com.bumptech.glide.Glide;
-import com.github.florent37.glidepalette.GlidePalette;
+import com.github.florent37.picassopalette.PicassoPalette;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,17 +49,21 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
         String url = ApiUtils.getImageUrl(movie.getImagePath(), ApiUtils.IMAGE_SIZE_NORMAL);
 
-        /*Glide.with(mContext)
-                .load(movie.getImageUrl(IMAGE_WIDTH))
-                .into(holder.mImageView);*/
+        Picasso.with(mContext)
+                .load(url)
+                .into(holder.mImageView,
+                        PicassoPalette.with(url, holder.mImageView)
+                                .use(PicassoPalette.Profile.VIBRANT)
+                                .intoBackground(holder.mTitleTv)
+                                .intoTextColor(holder.mTitleTv, PicassoPalette.Swatch.BODY_TEXT_COLOR));
 
-        Glide.with(mContext).load(url)
+        /*Glide.with(mContext).load(url)
                 .listener(GlidePalette.with(url)
                         .use(GlidePalette.Profile.VIBRANT)
                         .intoBackground(holder.mTitleTv)
                         .intoTextColor(holder.mTitleTv, GlidePalette.Swatch.BODY_TEXT_COLOR)
                         .crossfade(true)
-                ).into(holder.mImageView);
+                ).into(holder.mImageView);*/
     }
 
     @Override
@@ -73,8 +77,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
         notifyDataSetChanged();
     }
 
+    public void addItems(Collection<Movie> movies) {
+        if (movies != null) {
+            mItems.addAll(movies);
+            notifyItemRangeInserted(mItems.size()-movies.size(), mItems.size());
+        }
+    }
+
     public void clear() {
         mItems.clear();
+        notifyDataSetChanged();
     }
 
     public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

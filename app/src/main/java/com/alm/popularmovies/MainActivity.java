@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import com.alm.popularmovies.model.Movie;
 import com.alm.popularmovies.utils.ApiUtils;
+import com.alm.popularmovies.utils.EndlessRecyclerViewOnScrollListener;
 import com.alm.popularmovies.utils.NetworkUtils;
 import com.alm.popularmovies.utils.PreferenceUtils;
 
@@ -29,10 +30,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnRecyclerItemClickListener {
 
     private RecyclerView mRecyclerView;
-    private ProgressBar mProgressBar;
+    private ProgressBar mProgressBar, mLoadingView;
     private View mErrorView;
 
     private MoviesAdapter mAdapter;
+
+    private EndlessRecyclerViewOnScrollListener mOnScrollListener;
 
     private MoviesAsyncTask mAsyncTask;
 
@@ -43,8 +46,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mLoadingView = (ProgressBar) findViewById(R.id.loading_view);
         mErrorView = findViewById(R.id.container_error);
 
+        setupRecyclerView();
+
+        loadMovies(1);
+    }
+
+    private void setupRecyclerView() {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
 
@@ -52,13 +62,21 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
+        mOnScrollListener = new EndlessRecyclerViewOnScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page) {
+                loadMovies(page);
+                mOnScrollListener.setLoading(true);
+                mLoadingView.setVisibility(View.VISIBLE);
+            }
+        };
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
+
         mAdapter = new MoviesAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
-
-        loadMovies(PreferenceUtils.getSortByPreference(this));
     }
 
-    private void loadMovies(int sortBy) {
+    private void loadMovies(int page) {
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
             mAsyncTask = null;
@@ -70,27 +88,40 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
         }
 
         mAsyncTask = new MoviesAsyncTask(this);
-        mAsyncTask.execute(sortBy);
+        mAsyncTask.execute(page);
 
-        showLoading();
+        showLoading(page);
     }
 
-    private void showRecyclerView() {
+    private void showContent() {
         mErrorView.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
+        mLoadingView.setVisibility(View.GONE);
+        mOnScrollListener.setLoading(false);
     }
 
-    private void showLoading() {
+    private void showLoading(int page) {
         mErrorView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
+        if (page == 1) {
+            mRecyclerView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else
+            mLoadingView.setVisibility(View.VISIBLE);
     }
 
     private void showError() {
         mErrorView.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.GONE);
+        mLoadingView.setVisibility(View.GONE);
+    }
+
+    private void reset() {
+        mOnScrollListener.reset();
+        mAdapter.clear();
+        mRecyclerView.scrollToPosition(0);
+        loadMovies(1);
     }
 
     /**
@@ -98,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
      * @param view the button
      */
     public void onTryAgainClicked(View view) {
-        loadMovies(PreferenceUtils.getSortByPreference(this));
+        reset();
     }
 
     @Override
@@ -116,8 +147,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
      */
     public void onFinishLoading(ArrayList<Movie> movies) {
         if (movies != null) {
-            mAdapter.setItems(movies);
-            showRecyclerView();
+            mAdapter.addItems(movies);
+            showContent();
         } else {
             mAdapter.clear(); // we don't want those items any more
             showError();
@@ -145,13 +176,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
             case R.id.item_sort_by_popularity:
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_POPULARITY);
-                loadMovies(PreferenceUtils.SORT_BY_POPULARITY);
+                reset();
                 return true;
 
             case R.id.item_sort_by_rate:
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_RATE);
-                loadMovies(PreferenceUtils.SORT_BY_RATE);
+                reset();
                 return true;
 
             case R.id.item_feedback:
@@ -161,9 +192,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
             case R.id.item_about:
                 showAboutDialog();
                 return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void showAboutDialog() {
@@ -191,20 +223,22 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
     private static class MoviesAsyncTask extends AsyncTask<Integer, Void, ArrayList<Movie>> {
 
         private WeakReference<MainActivity> mReference;
+        private int sort_by_type;
 
         public MoviesAsyncTask(MainActivity activity) {
             mReference = new WeakReference<>(activity);
+            sort_by_type = PreferenceUtils.getSortByPreference(activity);
         }
 
         @Override
         protected ArrayList<Movie> doInBackground(Integer... integers) {
-            int sort_by_type = integers[0];
+            int page = integers[0];
             try {
                 Uri mUri;
                 if (sort_by_type == PreferenceUtils.SORT_BY_RATE)
-                    mUri = ApiUtils.buildTopRatedMoviesUrl(null);
+                    mUri = ApiUtils.buildTopRatedMoviesUrl(page);
                 else
-                    mUri = ApiUtils.buildPopularMoviesUrl(null);
+                    mUri = ApiUtils.buildPopularMoviesUrl(page);
 
                 URL url = new URL(mUri.toString());
                 String response = NetworkUtils.getResponseFromHttpUrl(url);
