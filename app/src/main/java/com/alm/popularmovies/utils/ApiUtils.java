@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.alm.popularmovies.BuildConfig;
 import com.alm.popularmovies.model.Movie;
-import com.alm.popularmovies.model.MovieDetails;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,7 +81,7 @@ public class ApiUtils {
         return movies;
     }
 
-    public static MovieDetails parseMovieDetails(String response) throws JSONException {
+    public static Movie parseMovieDetails(String response) throws JSONException {
         Log.i(TAG, "Parsing details - " + response.substring(0, 15));
 
         JSONObject root = new JSONObject(response);
@@ -100,12 +99,12 @@ public class ApiUtils {
             Log.e(TAG, "Error parsing date - " + root.getString("release_date"), e);
         }
 
-        return new MovieDetails(root.getInt("id"),
+        return new Movie(root.getInt("id"),
                 root.getString("original_title"),
                 realeseDate,
+                root.getString("poster_path"),
                 root.getDouble("vote_average"),
-                root.getString("overview"),
-                root.getString("poster_path"));
+                root.getString("overview"));
     }
 
     private static void parseError(JSONObject root) throws JSONException {

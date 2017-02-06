@@ -47,7 +47,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
         holder.mTitleTv.setText(movie.getTitle());
 
-        String url = ApiUtils.getImageUrl(movie.getImagePath(), ApiUtils.IMAGE_SIZE_NORMAL);
+        String url = ApiUtils.getImageUrl(movie.getPosterPath(), ApiUtils.IMAGE_SIZE_NORMAL);
 
         Picasso.with(mContext)
                 .load(url)
@@ -56,14 +56,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
                                 .use(PicassoPalette.Profile.VIBRANT)
                                 .intoBackground(holder.mTitleTv)
                                 .intoTextColor(holder.mTitleTv, PicassoPalette.Swatch.BODY_TEXT_COLOR));
-
-        /*Glide.with(mContext).load(url)
-                .listener(GlidePalette.with(url)
-                        .use(GlidePalette.Profile.VIBRANT)
-                        .intoBackground(holder.mTitleTv)
-                        .intoTextColor(holder.mTitleTv, GlidePalette.Swatch.BODY_TEXT_COLOR)
-                        .crossfade(true)
-                ).into(holder.mImageView);*/
     }
 
     @Override

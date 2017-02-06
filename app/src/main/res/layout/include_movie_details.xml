@@ -23,7 +23,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#607D8B"
+        android:background="@color/divider"
         android:layout_margin="8dp"/>
 
     <TextView
@@ -43,7 +43,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#607D8B"
+        android:background="@color/divider"
         android:layout_margin="8dp"/>
 
     <TextView

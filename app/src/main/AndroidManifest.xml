@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         android:name=".App">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -23,12 +23,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DetailsActivity"
+        <activity android:name=".ui.DetailsActivity"
                   android:theme="@style/AppTheme.NoActionBar"
-                  android:parentActivityName=".MainActivity">
+                  android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.alm.popularmovies.MainActivity" />
+                android:value="com.alm.popularmovies.ui.MainActivity" />
         </activity>
     </application>
 

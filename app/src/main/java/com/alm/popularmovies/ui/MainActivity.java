@@ -1,4 +1,4 @@
-package com.alm.popularmovies;
+package com.alm.popularmovies.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.alm.popularmovies.MoviesAdapter;
+import com.alm.popularmovies.R;
 import com.alm.popularmovies.model.Movie;
 import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.utils.EndlessRecyclerViewOnScrollListener;
