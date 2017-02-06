@@ -26,9 +26,9 @@ public class ApiUtils {
 
     public static final String TAG = ApiUtils.class.getSimpleName();
 
-    public static final Uri ENDPOINT = Uri.parse("https://api.themoviedb.org/3");
+    private static final Uri ENDPOINT = Uri.parse("https://api.themoviedb.org/3");
 
-    public static final SimpleDateFormat API_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat API_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static final String IMAGE_SIZE_SMALL = "w185";
     public static final String IMAGE_SIZE_NORMAL = "w342";
@@ -62,11 +62,16 @@ public class ApiUtils {
     }
 
     public static ArrayList<Movie> parseMovieListResponse(String response) throws JSONException {
-        // TODO: parse errors
-        Log.i(TAG, "Parsing movies - " + response.substring(10));
+        Log.i(TAG, "Parsing movies - " + response.substring(0, 15));
 
         JSONObject root = new JSONObject(response);
         JSONArray results = root.getJSONArray("results");
+
+        if (results == null) {
+            // no results, log error and return null
+            parseError(root);
+            return null;
+        }
 
         ArrayList<Movie> movies = new ArrayList<>(results.length());
         for (int i = 0; i < results.length(); i++) {
@@ -78,10 +83,15 @@ public class ApiUtils {
     }
 
     public static MovieDetails parseMovieDetails(String response) throws JSONException {
-        // TODO: parse errors
-        Log.i(TAG, "Parsing details - " + response.substring(10));
+        Log.i(TAG, "Parsing details - " + response.substring(0, 15));
 
         JSONObject root = new JSONObject(response);
+
+        if (root.has("status_message")) {
+            // no results, log error and return null
+            parseError(root);
+            return null;
+        }
 
         Date realeseDate = null;
         try {
@@ -96,5 +106,11 @@ public class ApiUtils {
                 root.getDouble("vote_average"),
                 root.getString("overview"),
                 root.getString("poster_path"));
+    }
+
+    private static void parseError(JSONObject root) throws JSONException {
+        String status_message = root.getString("status_message");
+        int status_code = root.getInt("status_code");
+        Log.e(TAG, String.format("Error getting movie list (%d): %s", status_code, status_message));
     }
 }

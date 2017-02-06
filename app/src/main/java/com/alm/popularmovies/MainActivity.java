@@ -27,7 +27,10 @@ import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnRecyclerItemClickListener {
+public class MainActivity extends AppCompatActivity
+        implements MoviesAdapter.OnRecyclerItemClickListener {
+
+    public static final int COLUMN_WIDTH_DP = 168;
 
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar, mLoadingView;
@@ -55,10 +58,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
     }
 
     private void setupRecyclerView() {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, dpWidth / 168);
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(this, getNumberOfColumns());
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
@@ -74,6 +75,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.OnR
 
         mAdapter = new MoviesAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    /**
+     * Calculates the desired number of columns that should show up in the {@link #mRecyclerView}.
+     * Based on the experience I use the width of the screen (in dp) and divided by
+     * {@link #COLUMN_WIDTH_DP} which is the approx. width that every column should have.
+     *
+     * @return number of columns
+     */
+    private int getNumberOfColumns() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
+        return dpWidth / COLUMN_WIDTH_DP;
     }
 
     private void loadMovies(int page) {

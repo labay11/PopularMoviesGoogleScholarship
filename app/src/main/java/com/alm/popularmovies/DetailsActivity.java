@@ -5,11 +5,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -57,6 +60,8 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         setupToolbar();
+        if (Utils.isPortrait(this))
+            setupPosterSize();
 
         ivPoster = (ImageView) findViewById(R.id.iv_backdrop);
         titleView = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
@@ -91,6 +96,16 @@ public class DetailsActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(null);
+    }
+
+    private void setupPosterSize() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        //float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        float dpHeight = displayMetrics.heightPixels;
+
+        AppBarLayout appBar = (AppBarLayout) findViewById(R.id.appbar);
+        appBar.setLayoutParams(new CoordinatorLayout
+                .LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, (int) (dpHeight * 3.0 / 4.0)));
     }
 
     private void loadDetails() {
@@ -171,7 +186,7 @@ public class DetailsActivity extends AppCompatActivity {
                                     @Override
                                     public void onPaletteLoaded(Palette palette) {
                                         if (palette != null && Utils.isPortrait(DetailsActivity.this)) {
-                                            int textColor = palette.getLightVibrantColor(Color.WHITE);
+                                            int textColor = palette.getLightMutedColor(Color.WHITE);
                                             titleView.setExpandedTitleColor(textColor);
                                             titleView.setCollapsedTitleTextColor(Color.WHITE);
                                         }
