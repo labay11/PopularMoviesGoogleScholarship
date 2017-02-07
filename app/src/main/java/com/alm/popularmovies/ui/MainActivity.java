@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity
 
     public static final int COLUMN_WIDTH_DP = 168;
 
+    public static final int START_PAGE = 1;
+
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar, mLoadingView;
     private View mErrorView;
@@ -57,7 +59,14 @@ public class MainActivity extends AppCompatActivity
 
         setupRecyclerView();
 
-        loadMovies(1);
+        if (savedInstanceState != null && savedInstanceState.containsKey("movies")) {
+            ArrayList<Movie> movies = savedInstanceState.getParcelableArrayList("movies");
+            int page = savedInstanceState.getInt("page");
+            onFinishLoading(movies);
+            mOnScrollListener.setPage(page);
+        } else {
+            loadMovies(START_PAGE);
+        }
     }
 
     private void setupRecyclerView() {
@@ -154,7 +163,7 @@ public class MainActivity extends AppCompatActivity
      */
     public void onTryAgainClicked(View view) {
         reset();
-        loadMovies(1);
+        loadMovies(START_PAGE);
     }
 
     @Override
@@ -188,6 +197,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mAdapter.getItemCount() > 0) {
+            outState.putInt("page", mOnScrollListener.getPage());
+            outState.putParcelableArrayList("movies", mAdapter.getItems());
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
@@ -209,18 +227,14 @@ public class MainActivity extends AppCompatActivity
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_POPULARITY);
                 reset();
-                loadMovies(1);
+                loadMovies(START_PAGE);
                 return true;
 
             case R.id.item_sort_by_rate:
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_RATE);
                 reset();
-                loadMovies(1);
-                return true;
-
-            case R.id.item_feedback:
-                sendFeedback();
+                loadMovies(START_PAGE);
                 return true;
 
             case R.id.item_about:
@@ -238,13 +252,6 @@ public class MainActivity extends AppCompatActivity
                 .setMessage(R.string.about_message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show();
-    }
-
-    private void sendFeedback() {
-        Intent intent = new Intent(Intent.ACTION_SENDTO,
-                Uri.fromParts("mailto", "alm.programming.and@gmail.com", null));
-        intent.putExtra(Intent.EXTRA_SUBJECT, "PopularMovies Feedback");
-        startActivity(intent);
     }
 
     /**

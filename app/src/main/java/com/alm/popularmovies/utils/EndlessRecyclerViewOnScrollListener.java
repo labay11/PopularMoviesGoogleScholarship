@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
 
 public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.OnScrollListener {
 
-    private static final int VISIBLE_THRESHOLD = 5; // changes depending on screen dim
+    private static final int VISIBLE_THRESHOLD = 5;
 
     private GridLayoutManager gridLayoutManager;
     private boolean loading = false;
@@ -41,6 +41,14 @@ public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.O
 
     public boolean isLoading() {
         return loading;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public void reset() {

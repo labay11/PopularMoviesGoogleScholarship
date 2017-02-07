@@ -21,10 +21,6 @@
         </menu>
     </item>
 
-    <item android:title="@string/send_feedback"
-          app:showAsAction="never"
-          android:id="@+id/item_feedback" />
-
     <item android:title="@string/about"
           app:showAsAction="never"
           android:id="@+id/item_about" />

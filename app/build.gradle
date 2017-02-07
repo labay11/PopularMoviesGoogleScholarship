@@ -7,43 +7,18 @@ android {
 
     defaultConfig {
         applicationId "com.alm.popularmovies"
-        minSdkVersion 12
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-    }
-
-    signingConfigs {
-        degub {
-            keyAlias "$debugKeyAlias"
-            keyPassword "$debugKeyPassword"
-            storeFile file("$debugStoreFile")
-            storePassword "$debugStorePassword"
-        }
-
-        release {
-            keyAlias "$releaseKeyAlias"
-            keyPassword "$releaseKeyPassword"
-            storeFile file("$releaseStoreFile")
-            storePassword "$releaseStorePassword"
-        }
     }
 
     buildTypes {
         debug {
             minifyEnabled true
             debuggable true
-            versionNameSuffix ' - debug'
-            signingConfig signingConfigs.debug
 
             proguardFiles 'proguard-rules.pro'
-
-            buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
-        }
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
 
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
@@ -73,5 +48,4 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
     compile 'com.github.florent37:picassopalette:2.0.0' // picasso library included here
-    compile 'ch.acra:acra:4.9.0'
 }

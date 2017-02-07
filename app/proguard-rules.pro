@@ -26,10 +26,8 @@
 
 # Picasso proguard
 -dontwarn com.squareup.picasso.**
--dontwarn com.squareup.okhttp.**
--dontwarn com.squareup.okhttp.internal.**
 
-# Proguard appcompat v7
+# appcompat v7 proguard
 -keep public class android.support.v7.widget.** { *; }
 -keep public class android.support.v7.internal.widget.** { *; }
 -keep public class android.support.v7.internal.view.menu.** { *; }

@@ -13,12 +13,19 @@ import android.view.View;
 
 public class Utils {
 
-    public static final int ANIMATION_DURATION = 1000;
+    public static final int ANIMATION_DURATION = 750;
 
     public static boolean isPortrait(Context context) {
-        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        return context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT;
     }
 
+    /**
+     * Helper method to animate two views, one which is going from invisible -> visible and
+     * another going from visible -> invisible at the same time.
+     * @param in view appearing
+     * @param out view disappearing
+     */
     public static void crossfade(final View in, final View out) {
         // Set the content view to 0% opacity but visible, so that it is visible
         // (but fully transparent) during the animation.

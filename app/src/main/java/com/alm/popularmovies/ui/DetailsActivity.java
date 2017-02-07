@@ -72,7 +72,7 @@ public class DetailsActivity extends AppCompatActivity {
         mContent = findViewById(R.id.content);
         mErrorView = findViewById(R.id.container_error);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("saved_movie_id")) {
             movieId = savedInstanceState.getInt("saved_movie_id", -1);
             mMovie = savedInstanceState.getParcelable("saved_movie");
         }
@@ -126,6 +126,10 @@ public class DetailsActivity extends AppCompatActivity {
         showLoading();
     }
 
+    /**
+     * Executed when the try again button is clicked.
+     * @param v the button
+     */
     public void onTryAgainClicked(View v) {
         loadDetails();
     }
@@ -147,6 +151,12 @@ public class DetailsActivity extends AppCompatActivity {
         mLoadingView.setVisibility(View.GONE);
     }
 
+    /**
+     * Called from {@link DetailsAsyncTask#onPostExecute(Movie)} after the
+     * movies have been fetched.
+     *
+     * @param details details of the movie.
+     */
     public void onFinishLoading(Movie details) {
         if (details == null) {
             showError();
@@ -154,11 +164,11 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         mMovie = details;
-        populateView();
+        populateViews();
         showContent();
     }
 
-    private void populateView() {
+    private void populateViews() {
         if (Utils.isPortrait(this))
             titleView.setTitle(mMovie.getTitle());
         else

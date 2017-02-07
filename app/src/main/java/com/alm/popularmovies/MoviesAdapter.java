@@ -29,7 +29,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
     private OnRecyclerItemClickListener mItemClickListener;
 
-    public MoviesAdapter(Context context, OnRecyclerItemClickListener onRecyclerItemClickListener) {
+    public MoviesAdapter(Context context,
+                         OnRecyclerItemClickListener onRecyclerItemClickListener) {
         mContext = context;
         mItemClickListener = onRecyclerItemClickListener;
     }
@@ -76,12 +77,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
         }
     }
 
+    public ArrayList<Movie> getItems() {
+        return mItems;
+    }
+
     public void clear() {
         mItems.clear();
         notifyDataSetChanged();
     }
 
-    public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView mImageView;
 
