@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.alm.popularmovies.MoviesAdapter;
 import com.alm.popularmovies.R;
@@ -70,7 +71,6 @@ public class MainActivity extends AppCompatActivity
             public void onLoadMore(int page) {
                 loadMovies(page);
                 mOnScrollListener.setLoading(true);
-                mLoadingView.setVisibility(View.VISIBLE);
             }
         };
         mRecyclerView.addOnScrollListener(mOnScrollListener);
@@ -99,7 +99,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (!NetworkUtils.hasNetworkConnection(this)) {
-            showError();
+            if (mAdapter.getItemCount() > 0) {
+                // we get an error loading new page but we don't want
+                // to delete all the previous results so just stop loading
+                // results for a while
+                mLoadingView.setVisibility(View.GONE);
+                mOnScrollListener.setLoading(false);
+                Toast.makeText(this, R.string.no_network, Toast.LENGTH_SHORT).show();
+            } else {
+                showError();
+            }
             return;
         }
 
@@ -137,7 +146,6 @@ public class MainActivity extends AppCompatActivity
         mOnScrollListener.reset();
         mAdapter.clear();
         mRecyclerView.scrollToPosition(0);
-        loadMovies(1);
     }
 
     /**
@@ -146,6 +154,7 @@ public class MainActivity extends AppCompatActivity
      */
     public void onTryAgainClicked(View view) {
         reset();
+        loadMovies(1);
     }
 
     @Override
@@ -165,8 +174,15 @@ public class MainActivity extends AppCompatActivity
         if (movies != null) {
             mAdapter.addItems(movies);
             showContent();
+        } else if (mAdapter.getItemCount() > 0) {
+            // we get an error loading new page but we don't want
+            // to delete all the previous results so just stop loading
+            // results for a while
+            mLoadingView.setVisibility(View.GONE);
+            mOnScrollListener.setLoading(false);
+            Toast.makeText(this, R.string.error_toast, Toast.LENGTH_SHORT).show();
         } else {
-            mAdapter.clear(); // we don't want those items any more
+            reset(); // reset the recycler view items if any
             showError();
         }
     }
@@ -193,12 +209,14 @@ public class MainActivity extends AppCompatActivity
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_POPULARITY);
                 reset();
+                loadMovies(1);
                 return true;
 
             case R.id.item_sort_by_rate:
                 item.setChecked(true);
                 PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_RATE);
                 reset();
+                loadMovies(1);
                 return true;
 
             case R.id.item_feedback:
