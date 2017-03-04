@@ -1,17 +1,29 @@
-package com.alm.popularmovies.model;
+package com.alm.popularmovies.api.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.alm.popularmovies.utils.ApiUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 
+import okhttp3.ResponseBody;
+
+import static android.content.ContentValues.TAG;
+
 /**
- * Created by A. Labay on 24/01/17.
+ * Created by A. Labay on 26/02/17.
  * As part of the project PopularMovies.
  */
 
-public class Movie implements Parcelable {
+public class Details implements Parcelable {
 
     private int movieId;
 
@@ -21,21 +33,20 @@ public class Movie implements Parcelable {
 
     private String posterPath;
 
-    private double voteAverage;
+    private float voteAverage;
 
     private String synopsis;
 
-    public Movie(int movieId, String title, String posterPath) {
+    public Details(int movieId, String title, String posterPath) {
         this.movieId = movieId;
         this.title = title;
         this.posterPath = posterPath;
     }
-
-    public Movie(int movieId,
+    public Details(int movieId,
                  String title,
                  Date releaseDate,
                  String posterPath,
-                 double voteAverage,
+                 float voteAverage,
                  String synopsis) {
 
         this.movieId = movieId;
@@ -46,13 +57,13 @@ public class Movie implements Parcelable {
         this.synopsis = synopsis;
     }
 
-    protected Movie(Parcel in) {
+    protected Details(Parcel in) {
         this.movieId = in.readInt();
         this.title = in.readString();
         long tmpReleaseDate = in.readLong();
         this.releaseDate = tmpReleaseDate == -1 ? null : new Date(tmpReleaseDate);
         this.posterPath = in.readString();
-        this.voteAverage = in.readDouble();
+        this.voteAverage = in.readFloat();
         this.synopsis = in.readString();
     }
 
@@ -76,7 +87,7 @@ public class Movie implements Parcelable {
         return releaseDate;
     }
 
-    public double getVoteAverage() {
+    public float getVoteAverage() {
         return voteAverage;
     }
 
@@ -97,7 +108,7 @@ public class Movie implements Parcelable {
         dest.writeString(this.title);
         dest.writeLong(this.releaseDate != null ? this.releaseDate.getTime() : -1);
         dest.writeString(this.posterPath);
-        dest.writeDouble(this.voteAverage);
+        dest.writeFloat(this.voteAverage);
         dest.writeString(this.synopsis);
     }
 
@@ -108,4 +119,39 @@ public class Movie implements Parcelable {
         @Override
         public Movie[] newArray(int size) {return new Movie[size];}
     };
+
+    public static class Converter implements retrofit2.Converter<ResponseBody, Details> {
+        @Override
+        public Details convert(ResponseBody value) throws IOException {
+            try {
+                JSONObject root = new JSONObject(value.string());
+
+                if (root.has("status_message")) {
+                    // no results, log error and return null
+                    ApiUtils.parseError(root);
+                    return null;
+                }
+
+                Date realeseDate = null;
+                try {
+                    realeseDate = ApiUtils.API_DATE_FORMAT.parse(root.getString("release_date"));
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error parsing date - " + root.getString("release_date"), e);
+                }
+
+                return new Details(
+                        root.getInt("id"),
+                        root.getString("original_title"),
+                        realeseDate,
+                        root.getString("poster_path"),
+                        (float) root.getDouble("vote_average"),
+                        root.getString("overview")
+                );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }

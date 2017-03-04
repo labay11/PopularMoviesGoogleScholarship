@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rv_movies"/>
+
+    <ProgressBar
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:id="@+id/progress_bar"
+        android:layout_gravity="center"/>
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:orientation="vertical"
+                  android:id="@+id/container_error"
+                  android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="@string/error_message"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_try_again"
+            android:text="@string/try_again"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loading_view"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+</FrameLayout>

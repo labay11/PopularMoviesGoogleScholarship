@@ -1,15 +1,17 @@
-package com.alm.popularmovies;
+package com.alm.popularmovies.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alm.popularmovies.model.Movie;
+import com.alm.popularmovies.R;
 import com.alm.popularmovies.utils.ApiUtils;
+import com.alm.popularmovies.api.model.Movie;
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
 
@@ -29,26 +31,36 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
     private OnRecyclerItemClickListener mItemClickListener;
 
+    private boolean isFav = false;
+
     public MoviesAdapter(Context context,
                          OnRecyclerItemClickListener onRecyclerItemClickListener) {
         mContext = context;
         mItemClickListener = onRecyclerItemClickListener;
     }
 
+    public void setFav(boolean fav) {
+        isFav = fav;
+    }
+
     @Override
     public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MovieHolder(LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.list_item_movies, parent, false));
+                .inflate(R.layout.list_item_movie, parent, false));
     }
 
     @Override
     public void onBindViewHolder(MovieHolder holder, int position) {
         Movie movie = mItems.get(position);
 
-        holder.mTitleTv.setText(movie.getTitle());
+        holder.mTitleTv.setText(movie.title);
 
-        String url = ApiUtils.getImageUrl(movie.getPosterPath(), ApiUtils.IMAGE_SIZE_NORMAL);
+        if (isFav) {
+            holder.mFavButton.setVisibility(View.VISIBLE);
+        }
+
+        String url = ApiUtils.getImageUrl(movie.poster_path, ApiUtils.IMAGE_SIZE_NORMAL);
 
         Picasso.with(mContext)
                 .load(url)
@@ -81,6 +93,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
         return mItems;
     }
 
+    public void removeItem(int pos) {
+        mItems.remove(pos);
+        notifyItemRemoved(pos);
+    }
+
     public void clear() {
         mItems.clear();
         notifyDataSetChanged();
@@ -92,22 +109,36 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
         public TextView mTitleTv;
 
+        public ImageButton mFavButton;
+
         public MovieHolder(View itemView) {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_image);
             mTitleTv = (TextView) itemView.findViewById(R.id.list_item_title);
+            mFavButton = (ImageButton) itemView.findViewById(R.id.list_item_fav);
+
+            mFavButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int index = getAdapterPosition();
+                    mItemClickListener.onToggleFavClick(index, mItems.get(index));
+                }
+            });
 
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            mItemClickListener.onRecyclerItemClick(mItems.get(getAdapterPosition()));
+            final int index = getAdapterPosition();
+            mItemClickListener.onRecyclerItemClick(index, mItems.get(index));
         }
     }
 
     public interface OnRecyclerItemClickListener {
-        void onRecyclerItemClick(Movie movie);
+        void onRecyclerItemClick(int index, Movie movie);
+
+        void onToggleFavClick(int index, Movie movie);
     }
 }

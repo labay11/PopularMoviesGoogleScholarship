@@ -13,4 +13,17 @@
     <string name="about">About</string>
     <string name="about_message">App that helps you discover the most popular movies, made for the Android Developer Nanodegree program. \n\nLauncher icon: \u00A9 2014 IconShow.me</string>
     <string name="summary_not_available">No summary is available for this language.</string>
+    <string name="empty_favorite">No favorite movie yet</string>
+    <string name="failed_remove_fav">Failed to remove from favorites</string>
+    <string name="failed_insert_fav">Failed to insert into favorites</string>
+
+    <string name="favorites">Favorites</string>
+    <string name="videos">Videos</string>
+    <string name="reviews">Reviews</string>
+    <string name="no_reviews">No reviews found</string>
+    <string name="no_videos">No videos found</string>
+
+    <string name="placeholder_title"/>
+    <string name="placeholder_author"/>
+    <string name="placeholder_content"/>
 </resources>

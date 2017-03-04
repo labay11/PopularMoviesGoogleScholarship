@@ -1,248 +1,137 @@
 package com.alm.popularmovies.ui;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.view.Menu;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.alm.popularmovies.MoviesAdapter;
 import com.alm.popularmovies.R;
-import com.alm.popularmovies.model.Movie;
-import com.alm.popularmovies.utils.ApiUtils;
-import com.alm.popularmovies.utils.EndlessRecyclerViewOnScrollListener;
-import com.alm.popularmovies.utils.NetworkUtils;
+import com.alm.popularmovies.ui.movielist.MovieListView;
 import com.alm.popularmovies.utils.PreferenceUtils;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity
-        implements MoviesAdapter.OnRecyclerItemClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int COLUMN_WIDTH_DP = 168;
-
-    public static final int START_PAGE = 1;
-
-    private RecyclerView mRecyclerView;
-    private ProgressBar mProgressBar, mLoadingView;
-    private View mErrorView;
-
-    private MoviesAdapter mAdapter;
-
-    private EndlessRecyclerViewOnScrollListener mOnScrollListener;
-
-    private MoviesAsyncTask mAsyncTask;
+    private Fragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mLoadingView = (ProgressBar) findViewById(R.id.loading_view);
-        mErrorView = findViewById(R.id.container_error);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.app_name, R.string.app_name);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-        setupRecyclerView();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        int id = loadLastVisibleScreen();
+        navigationView.setCheckedItem(id);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("movies")) {
-            ArrayList<Movie> movies = savedInstanceState.getParcelableArrayList("movies");
-            int page = savedInstanceState.getInt("page");
-            onFinishLoading(movies);
-            mOnScrollListener.setPage(page);
-        } else {
-            loadMovies(START_PAGE);
-        }
-    }
+        if (savedInstanceState != null) {
+            mFragment = getSupportFragmentManager()
+                    .getFragment(savedInstanceState, "fragmentSavedState");
+            if (mFragment != null) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-    private void setupRecyclerView() {
-        GridLayoutManager gridLayoutManager =
-                new GridLayoutManager(this, getNumberOfColumns());
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
+                // Replace whatever is in the fragment_container view with this fragment,
+                // and add the transaction to the back stack if needed
+                transaction.replace(R.id.frame_container, mFragment);
+                //transaction.addToBackStack(null);
 
-        mOnScrollListener = new EndlessRecyclerViewOnScrollListener(gridLayoutManager) {
-            @Override
-            public void onLoadMore(int page) {
-                loadMovies(page);
-                mOnScrollListener.setLoading(true);
+                // Commit the transaction
+                transaction.commit();
             }
-        };
-        mRecyclerView.addOnScrollListener(mOnScrollListener);
-
-        mAdapter = new MoviesAdapter(this, this);
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
-    /**
-     * Calculates the desired number of columns that should show up in the {@link #mRecyclerView}.
-     * Based on the experience I use the width of the screen (in dp) and divided by
-     * {@link #COLUMN_WIDTH_DP} which is the approx. width that every column should have.
-     *
-     * @return number of columns
-     */
-    private int getNumberOfColumns() {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
-        return dpWidth / COLUMN_WIDTH_DP;
-    }
-
-    private void loadMovies(int page) {
-        if (mAsyncTask != null) {
-            mAsyncTask.cancel(true);
-            mAsyncTask = null;
-        }
-
-        if (!NetworkUtils.hasNetworkConnection(this)) {
-            if (mAdapter.getItemCount() > 0) {
-                // we get an error loading new page but we don't want
-                // to delete all the previous results so just stop loading
-                // results for a while
-                mLoadingView.setVisibility(View.GONE);
-                mOnScrollListener.setLoading(false);
-                Toast.makeText(this, R.string.no_network, Toast.LENGTH_SHORT).show();
-            } else {
-                showError();
-            }
-            return;
-        }
-
-        mAsyncTask = new MoviesAsyncTask(this);
-        mAsyncTask.execute(page);
-
-        showLoading(page);
-    }
-
-    private void showContent() {
-        mErrorView.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.GONE);
-        mLoadingView.setVisibility(View.GONE);
-        mOnScrollListener.setLoading(false);
-    }
-
-    private void showLoading(int page) {
-        mErrorView.setVisibility(View.GONE);
-        if (page == 1) {
-            mRecyclerView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else
-            mLoadingView.setVisibility(View.VISIBLE);
-    }
-
-    private void showError() {
-        mErrorView.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.GONE);
-        mLoadingView.setVisibility(View.GONE);
-    }
-
-    private void reset() {
-        mOnScrollListener.reset();
-        mAdapter.clear();
-        mRecyclerView.scrollToPosition(0);
-    }
-
-    /**
-     * Executed when the try again button is clicked.
-     * @param view the button
-     */
-    public void onTryAgainClicked(View view) {
-        reset();
-        loadMovies(START_PAGE);
-    }
-
-    @Override
-    public void onRecyclerItemClick(Movie movie) {
-        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_ID, movie.getMovieId());
-        startActivity(intent);
-    }
-
-    /**
-     * Called from {@link MoviesAsyncTask#onPostExecute(ArrayList)} after the
-     * movies have been fetched.
-     *
-     * @param movies list of movies to show in the {@link RecyclerView}.
-     */
-    public void onFinishLoading(ArrayList<Movie> movies) {
-        if (movies != null) {
-            mAdapter.addItems(movies);
-            showContent();
-        } else if (mAdapter.getItemCount() > 0) {
-            // we get an error loading new page but we don't want
-            // to delete all the previous results so just stop loading
-            // results for a while
-            mLoadingView.setVisibility(View.GONE);
-            mOnScrollListener.setLoading(false);
-            Toast.makeText(this, R.string.error_toast, Toast.LENGTH_SHORT).show();
         } else {
-            reset(); // reset the recycler view items if any
-            showError();
+            loadFragment(id);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAdapter.getItemCount() > 0) {
-            outState.putInt("page", mOnScrollListener.getPage());
-            outState.putParcelableArrayList("movies", mAdapter.getItems());
+        if (mFragment != null) {
+            //Save the fragment's instance
+            getSupportFragmentManager().putFragment(outState, "fragmentSavedState", mFragment);
+        }
+    }
+
+    private int loadLastVisibleScreen() {
+        switch (PreferenceUtils.getLastVIsibleScreen(this)) {
+            case PreferenceUtils.SCREEN_POPULAR:
+                return R.id.nav_popular;
+            case PreferenceUtils.SCREEN_RATE:
+                return R.id.nav_rated;
+            case PreferenceUtils.SCREEN_FAVORITES:
+                return R.id.nav_fav;
+
+            default:
+                return R.id.nav_popular;
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        int sortBySaved = PreferenceUtils.getSortByPreference(this);
-        // change checked item based on user preferences
-        if (sortBySaved == PreferenceUtils.SORT_BY_RATE) {
-            menu.findItem(R.id.item_sort_by_rate).setChecked(true);
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
         } else {
-            menu.findItem(R.id.item_sort_by_popularity).setChecked(true);
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_about) {
+            showAboutDialog();
+        } else {
+            loadFragment(id);
         }
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_sort_by_popularity:
-                item.setChecked(true);
-                PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_POPULARITY);
-                reset();
-                loadMovies(START_PAGE);
-                return true;
+    private void loadFragment(@IdRes int id) {
+        if (id == R.id.nav_popular) {
+            mFragment = MovieListView.create(PreferenceUtils.SCREEN_POPULAR);
+        } else if (id == R.id.nav_rated) {
+            mFragment = MovieListView.create(PreferenceUtils.SCREEN_RATE);
+        } else if (id == R.id.nav_fav) {
+            mFragment = FavoritesFragment.create();
+        }
 
-            case R.id.item_sort_by_rate:
-                item.setChecked(true);
-                PreferenceUtils.setSortByPreference(this, PreferenceUtils.SORT_BY_RATE);
-                reset();
-                loadMovies(START_PAGE);
-                return true;
+        if (mFragment != null) {
+            // Create new fragment and transaction
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            case R.id.item_about:
-                showAboutDialog();
-                return true;
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack if needed
+            transaction.replace(R.id.frame_container, mFragment);
+            //transaction.addToBackStack(null);
 
-            default:
-                return super.onOptionsItemSelected(item);
+            // Commit the transaction
+            transaction.commit();
+
+            PreferenceUtils.setLastVisibleScreen(this, getScreenFromId(id));
         }
     }
 
@@ -254,51 +143,17 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    /**
-     * AsyncTask to fetch the movies on a background thread.
-     *
-     * Connected with {@link MainActivity} with a {@link WeakReference} so,
-     * in case the activity is destroyed before the background task finishes,
-     * the app does not crash.
-     */
-    private static class MoviesAsyncTask extends AsyncTask<Integer, Void, ArrayList<Movie>> {
+    private int getScreenFromId(@IdRes int id) {
+        switch (id) {
+            case R.id.nav_popular:
+                return PreferenceUtils.SCREEN_POPULAR;
+            case R.id.nav_rated:
+                return PreferenceUtils.SCREEN_RATE;
+            case R.id.nav_fav:
+                return PreferenceUtils.SCREEN_FAVORITES;
 
-        private WeakReference<MainActivity> mReference;
-        private int sort_by_type;
-
-        public MoviesAsyncTask(MainActivity activity) {
-            mReference = new WeakReference<>(activity);
-            sort_by_type = PreferenceUtils.getSortByPreference(activity);
-        }
-
-        @Override
-        protected ArrayList<Movie> doInBackground(Integer... integers) {
-            int page = integers[0];
-            try {
-                Uri mUri;
-                if (sort_by_type == PreferenceUtils.SORT_BY_RATE)
-                    mUri = ApiUtils.buildTopRatedMoviesUrl(page);
-                else
-                    mUri = ApiUtils.buildPopularMoviesUrl(page);
-
-                URL url = new URL(mUri.toString());
-                String response = NetworkUtils.getResponseFromHttpUrl(url);
-                return ApiUtils.parseMovieListResponse(response);
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            super.onPostExecute(movies);
-            if (mReference != null) {
-                if (mReference.get() != null) {
-                    mReference.get().onFinishLoading(movies);
-                }
-            }
+            default:
+                return PreferenceUtils.SCREEN_POPULAR;
         }
     }
 }

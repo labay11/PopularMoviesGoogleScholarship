@@ -7,10 +7,23 @@
     <string name="release_date">Data de llançament</string>
     <string name="sort_by">Ordena per…</string>
     <string name="synopsis">Argument</string>
-    <string name="top_rated">Més valorades</string>
+    <string name="top_rated">Millor valorades</string>
     <string name="try_again">Torna-ho a provar</string>
     <string name="no_network">Cap connexió a internet</string>
     <string name="about">Informació</string>
     <string name="about_message">Aplicació que t\'ajuda a descobrir les pel·lícules més populars, feta pel "Android Developer Nanodegree program". \n\nLauncher icon: \u00A9 2014 IconShow.me</string>
     <string name="summary_not_available">No hi ha cap resum disponible en aquesta llengua.</string>
+    <string name="empty_favorite">Cap pel·lícula preferida encara</string>
+
+    <string name="failed_remove_fav">No s\'ha pogut eliminar dels favorits</string>
+    <string name="failed_insert_fav">Error al inserir als favorits</string>
+    <string name="favorites">Preferides</string>
+    <string name="no_reviews">Cap review trobada</string>
+    <string name="no_videos">Cap vídeo trobat</string>
+    <string name="reviews">Reviews</string>
+    <string name="videos">Vídeo</string>
+
+    <string name="placeholder_title"/>
+    <string name="placeholder_author"/>
+    <string name="placeholder_content"/>
 </resources>

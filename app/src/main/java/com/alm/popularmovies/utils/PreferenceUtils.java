@@ -10,19 +10,20 @@ import android.preference.PreferenceManager;
 
 public class PreferenceUtils {
 
-    public static final String SORT_BY = "sort_by";
-    public static final int SORT_BY_POPULARITY = 0,
-                            SORT_BY_RATE = 1;
+    private static final String LAST_VISIBLE_SCREEN = "last_visible_screen";
+    public static final int SCREEN_POPULAR = 0,
+                            SCREEN_RATE = 1,
+                            SCREEN_FAVORITES = 2;
 
-    public static int getSortByPreference(Context context) {
+    public static int getLastVIsibleScreen(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                    .getInt(SORT_BY, SORT_BY_POPULARITY);
+                    .getInt(LAST_VISIBLE_SCREEN, SCREEN_POPULAR);
     }
 
-    public static void setSortByPreference(Context context, int sortBy) {
+    synchronized public static void setLastVisibleScreen(Context context, int screen) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
-                .putInt(SORT_BY, sortBy)
+                .putInt(LAST_VISIBLE_SCREEN, screen)
                 .apply();
     }
 }

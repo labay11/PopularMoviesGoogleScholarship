@@ -40,6 +40,23 @@
                 android:layout_height="?attr/actionBarSize"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:id="@+id/tv_title"
+                android:text="@string/placeholder_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_gravity="bottom"
+                android:paddingStart="64dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="64dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                app:layout_collapseMode="pin"/>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -49,30 +66,20 @@
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <include layout="@layout/include_movie_details"/>
 
-            <include layout="@layout/include_movie_details"
-                android:id="@+id/content"
-                android:visibility="gone"/>
-
-            <include layout="@layout/include_error"
-                     android:id="@+id/container_error"
-                     android:visibility="gone"/>
-
-            <ProgressBar
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/progress_bar"/>
-        </FrameLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <!--<android.support.design.widget.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_margin="16dp"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end"/>-->
+        android:id="@+id/fab"
+        android:src="@drawable/ic_not_favorite"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:fabSize="mini"
+        app:layout_anchor="@id/collapsing_toolbar_layout"
+        app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

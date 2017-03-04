@@ -3,16 +3,31 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="256dp"
+              android:layout_height="@dimen/list_item_height"
     android:padding="1dp">
 
-    <ImageView
-        android:layout_width="match_parent"
+    <FrameLayout android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/list_item_image"
-        android:scaleType="centerCrop"
-        tools:background="@color/colorAccent"/>
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_item_image"
+            android:scaleType="centerCrop"
+            tools:background="@color/colorAccent"/>
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_favorite"
+            android:tint="#ff0000"
+            android:layout_gravity="right|end"
+            android:background="#00000000"
+            android:id="@+id/list_item_fav"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+    </FrameLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -27,6 +42,7 @@
         android:maxLines="1"
         android:textSize="16sp"
         android:ellipsize="end"
+        android:visibility="gone"
         tools:background="#780000"/>
 
 </LinearLayout>

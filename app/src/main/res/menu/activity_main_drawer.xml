@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_popular"
+            android:icon="@drawable/ic_whatshot_black_24dp"
+            android:title="@string/most_popular"/>
+        <item
+            android:id="@+id/nav_rated"
+            android:icon="@drawable/ic_star_black_24dp"
+            android:title="@string/top_rated"/>
+        <item
+            android:id="@+id/nav_fav"
+            android:icon="@drawable/ic_favorite"
+            android:title="@string/favorites"/>
+    </group>
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_about"
+            android:title="@string/about"
+            android:icon="@drawable/ic_info_outline_black_24dp"/>
+    </group>
+
+</menu>

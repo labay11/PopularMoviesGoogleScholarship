@@ -1,58 +1,40 @@
 package com.alm.popularmovies.ui;
 
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.alm.popularmovies.R;
-import com.alm.popularmovies.model.Movie;
-import com.alm.popularmovies.utils.ApiUtils;
-import com.alm.popularmovies.utils.NetworkUtils;
-import com.alm.popularmovies.utils.Utils;
-import com.github.florent37.picassopalette.PicassoPalette;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.text.DateFormat;
 
 /**
  * Created by A. Labay on 01/02/17.
  * As part of the project PopularMovies.
  */
-
 public class DetailsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_MOVIE_ID = "extra_movie_id";
+    /*public static final String EXTRA_MOVIE = "extra_movie";
 
     private int movieId = -1;
 
     private Movie mMovie = null;
 
+    private boolean mIsFav = false;
+
     private DetailsAsyncTask mTask;
 
-    private ImageView ivPoster;
-    private CollapsingToolbarLayout titleView;
-    private TextView tvDate, tvRating, tvSummary;
-    private ProgressBar mLoadingView;
-    private View mContent, mErrorView;
+    @BindView(R.id.iv_backdrop)
+    public ImageView mIvPoster;
+    public CollapsingToolbarLayout mTitleView;
+    @BindView(R.id.tv_date)
+    public TextView mDateTv;
+    @BindView(R.id.rating_bar)
+    public RatingBar mRatingBar;
+    @BindView(R.id.tv_summary)
+    public TextView mSummaryTv;
+    @BindView(R.id.progress_bar)
+    public ProgressBar mLoadingView;
+    @BindView(R.id.content)
+    public View mContent;
+    @BindView(R.id.container_error)
+    public View mErrorView;
+    @BindView(R.id.fab)
+    public FloatingActionButton fab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,14 +45,10 @@ public class DetailsActivity extends AppCompatActivity {
         if (Utils.isPortrait(this))
             setupPosterSize();
 
-        ivPoster = (ImageView) findViewById(R.id.iv_backdrop);
-        titleView = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
-        tvDate = (TextView) findViewById(R.id.tv_date);
-        tvRating = (TextView) findViewById(R.id.tv_rating);
-        tvSummary = (TextView) findViewById(R.id.tv_summary);
-        mLoadingView = (ProgressBar) findViewById(R.id.progress_bar);
-        mContent = findViewById(R.id.content);
-        mErrorView = findViewById(R.id.container_error);
+        ButterKnife.bind(this);
+
+        // only exists when vertical
+        mTitleView = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
 
         if (savedInstanceState != null && savedInstanceState.containsKey("saved_movie_id")) {
             movieId = savedInstanceState.getInt("saved_movie_id", -1);
@@ -89,6 +67,8 @@ public class DetailsActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_toast, Toast.LENGTH_SHORT).show();
             finish();
         }
+
+        setupFab();
     }
 
     private void setupToolbar() {
@@ -106,6 +86,19 @@ public class DetailsActivity extends AppCompatActivity {
         AppBarLayout appBar = (AppBarLayout) findViewById(R.id.appbar);
         appBar.setLayoutParams(new CoordinatorLayout
                 .LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, (int) (dpHeight * 3.0 / 4.0)));
+    }
+
+    private void setupFab() {
+        mIsFav = Utils.isMovieFav(getContentResolver(), movieId);
+
+        fab.setImageResource(mIsFav ? R.drawable.ic_favorite : R.drawable.ic_not_favorite);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleFav();
+            }
+        });
     }
 
     private void loadDetails() {
@@ -126,10 +119,46 @@ public class DetailsActivity extends AppCompatActivity {
         showLoading();
     }
 
+    private void toggleFav() {
+        if (mIsFav) {
+            int count = getContentResolver()
+                    .delete(MovieContract.MovieEntry.CONTENT_URI,
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?",
+                            new String[]{movieId+""});
+
+            if (count > 0) {
+                mIsFav = false;
+                fab.setImageResource(R.drawable.ic_not_favorite);
+            } else {
+                Toast.makeText(this,
+                        getString(R.string.failed_remove_fav),
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            ContentValues values = new ContentValues(2);
+            values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovie.getMovieId());
+            values.put(MovieContract.MovieEntry.COLUMN_TITLE, mMovie.getTitle());
+            values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, mMovie.getPoster_path());
+
+            Uri uri = getContentResolver().insert(
+                    MovieContract.MovieEntry.CONTENT_URI, values);
+
+            if (uri != null) {
+                mIsFav = true;
+                fab.setImageResource(R.drawable.ic_favorite);
+            } else {
+                Toast.makeText(this,
+                        getString(R.string.failed_remove_fav),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     /**
      * Executed when the try again button is clicked.
      * @param v the button
-     */
+     **/
+    /*@OnClick(R.id.btn_try_again)
     public void onTryAgainClicked(View v) {
         loadDetails();
     }
@@ -138,17 +167,27 @@ public class DetailsActivity extends AppCompatActivity {
         mLoadingView.setVisibility(View.VISIBLE);
         mContent.setVisibility(View.GONE);
         mErrorView.setVisibility(View.GONE);
+        fab.setVisibility(View.GONE);
     }
 
     private void showContent() {
         mErrorView.setVisibility(View.GONE);
         Utils.crossfade(mContent, mLoadingView);
+
+        fab.setScaleX(0.0f);
+        fab.setScaleY(0.0f);
+        fab.setVisibility(View.VISIBLE);
+        fab.animate()
+                .scaleX(1.0f)
+                .scaleY(1.0f)
+                .setDuration(Utils.ANIMATION_DURATION).start();
     }
 
     private void showError() {
         mErrorView.setVisibility(View.VISIBLE);
         mContent.setVisibility(View.GONE);
         mLoadingView.setVisibility(View.GONE);
+        fab.setVisibility(View.GONE);
     }
 
     /**
@@ -156,8 +195,8 @@ public class DetailsActivity extends AppCompatActivity {
      * movies have been fetched.
      *
      * @param details details of the movie.
-     */
-    public void onFinishLoading(Movie details) {
+     **/
+    /*public void onFinishLoading(Movie details) {
         if (details == null) {
             showError();
             return;
@@ -170,35 +209,35 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void populateViews() {
         if (Utils.isPortrait(this))
-            titleView.setTitle(mMovie.getTitle());
+            mTitleView.setTitle(mMovie.getTitle());
         else
             ((TextView) findViewById(R.id.tv_title)).setText(mMovie.getTitle());
 
-        tvDate.setText(DateFormat.getDateInstance().format(mMovie.getReleaseDate()));
-        tvRating.setText(String.format("%.1f", mMovie.getVoteAverage()));
+        mDateTv.setText(DateFormat.getDateInstance().format(mMovie.getReleaseDate()));
+        mRatingBar.setRating(mMovie.getVoteAverage() / 2f);
 
         if (mMovie.hasSynopsis())
-            tvSummary.setText(R.string.summary_not_available);
+            mSummaryTv.setText(R.string.summary_not_available);
         else
-            tvSummary.setText(mMovie.getSynopsis());
+            mSummaryTv.setText(mMovie.getSynopsis());
 
         if (!mMovie.hasImage()) {
-            ivPoster.setVisibility(View.GONE);
+            mIvPoster.setVisibility(View.GONE);
             return;
         }
 
-        String url = ApiUtils.getImageUrl(mMovie.getPosterPath(), ApiUtils.IMAGE_SIZE_LARGE);
+        String url = ApiUtils.getImageUrl(mMovie.getPoster_path(), ApiUtils.IMAGE_SIZE_LARGE);
         Picasso.with(this)
                 .load(url)
-                .into(ivPoster,
-                        PicassoPalette.with(url, ivPoster)
+                .into(mIvPoster,
+                        PicassoPalette.with(url, mIvPoster)
                                 .intoCallBack(new PicassoPalette.CallBack() {
                                     @Override
                                     public void onPaletteLoaded(Palette palette) {
                                         if (palette != null && Utils.isPortrait(DetailsActivity.this)) {
                                             int textColor = palette.getLightVibrantColor(Color.WHITE);
-                                            titleView.setExpandedTitleColor(textColor);
-                                            titleView.setCollapsedTitleTextColor(Color.WHITE);
+                                            mTitleView.setExpandedTitleColor(textColor);
+                                            mTitleView.setCollapsedTitleTextColor(Color.WHITE);
                                         }
                                     }
                                 }));
@@ -244,5 +283,5 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             }
         }
-    }
+    }*/
 }

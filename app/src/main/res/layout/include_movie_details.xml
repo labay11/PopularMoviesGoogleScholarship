@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              tools:showIn="@layout/activity_details">
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+    tools:showIn="@layout/activity_details">
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,12 +33,14 @@
         android:text="@string/rating"
         android:layout_marginBottom="8dp"/>
 
-    <TextView
-        android:layout_width="match_parent"
+    <RatingBar
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_rating"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        tools:text="9.9"/>
+        android:id="@+id/rating_bar"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="3.4"
+        android:isIndicator="true"/>
 
     <View
         android:layout_width="match_parent"
@@ -58,6 +60,79 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_summary"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        tools:text="Lorem impum dolor..."
+        android:text="@string/placeholder_content"
         android:fontFamily="monospace"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:text="@string/videos"
+        android:layout_marginBottom="8dp"/>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/pb_videos"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        tools:progress="30"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_error_videos"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:text="@string/no_videos"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_videos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:text="@string/reviews"
+        android:layout_marginBottom="8dp"/>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/pb_reviews"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        tools:progress="30"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_error_reviews"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:text="@string/no_reviews"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rv_reviews"/>
+
 </LinearLayout>

@@ -13,12 +13,37 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        degub {
+            keyAlias "$debugKeyAlias"
+            keyPassword "$debugKeyPassword"
+            storeFile file("$debugStoreFile")
+            storePassword "$debugStorePassword"
+        }
+
+        release {
+            keyAlias "$releaseKeyAlias"
+            keyPassword "$releaseKeyPassword"
+            storeFile file("$releaseStoreFile")
+            storePassword "$releaseStorePassword"
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled true
             debuggable true
+            versionNameSuffix ' - debug'
+            signingConfig signingConfigs.debug
 
             proguardFiles 'proguard-rules.pro'
+
+            buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
 
             buildConfigField 'String', 'MOVIEDB_API_KEY', "$movie_db_api_key"
         }
@@ -35,7 +60,10 @@ android {
 }
 
 ext {
-    android_support_version="25.1.1"
+    android_support_version = "25.2.0"
+    retrofit_version = "2.2.0"
+    butterknife_version = "8.5.1"
+    okhttp_version = "3.6.0"
 }
 
 dependencies {
@@ -45,7 +73,22 @@ dependencies {
     compile "com.android.support:appcompat-v7:$android_support_version"
     compile "com.android.support:recyclerview-v7:$android_support_version"
     compile "com.android.support:palette-v7:$android_support_version"
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
-    compile 'com.github.florent37:picassopalette:2.0.0' // picasso library included here
+    // picasso library included here
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    compile 'com.github.florent37:picassopalette:2.0.0'
+
+    compile "com.jakewharton:butterknife:$butterknife_version"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"
+
+    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
+    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    compile "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    //compile "com.squareup.okhttp3:okhttp:$okhttp_version"
+
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    //compile 'com.google.code.gson:gson:2.8.0'
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="list_item_width">192dp</dimen>
+    <dimen name="list_item_height">292dp</dimen>
+
+</resources>
