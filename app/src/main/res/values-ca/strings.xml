@@ -2,7 +2,7 @@
 <resources>
     <string name="error_message">S\'ha produit un error en la connexió.</string>
     <string name="error_toast">No s\'han pogut descarregar les dades, torna-ho a provar.</string>
-    <string name="most_popular">Més popular</string>
+    <string name="most_popular">Més populars</string>
     <string name="rating">Valoració</string>
     <string name="release_date">Data de llançament</string>
     <string name="sort_by">Ordena per…</string>
