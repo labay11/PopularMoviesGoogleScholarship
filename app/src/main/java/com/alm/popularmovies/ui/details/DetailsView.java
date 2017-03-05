@@ -153,7 +153,7 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
 
         AppBarLayout appBar = (AppBarLayout) findViewById(R.id.appbar);
         appBar.setLayoutParams(new CoordinatorLayout
-                .LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, (int) (dpHeight * 3.0 / 4.0)));
+                .LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, (int) (dpHeight * 0.7f)));
     }
 
     private void setupRecyclerViewVideos() {
@@ -168,7 +168,7 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
     private void setupRecyclerViewReviews() {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         mReviewsRv.setLayoutManager(manager);
-        mReviewsRv.setHasFixedSize(true);
+        //mReviewsRv.setHasFixedSize(true);
 
         mReviewsAdapter = new ReviewsAdapter(this, mReviewOnItemClickListener);
         mReviewsRv.setAdapter(mReviewsAdapter);
@@ -225,7 +225,6 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
         Picasso.with(this)
                 .load(url)
                 .into(mIvPoster, PicassoPalette.with(url, mIvPoster)
-                        .use(PicassoPalette.Profile.MUTED_DARK)
                             .intoCallBack(palette -> {
                                 if (palette != null) {
                                     int textColor = palette.getLightVibrantColor(Color.WHITE);

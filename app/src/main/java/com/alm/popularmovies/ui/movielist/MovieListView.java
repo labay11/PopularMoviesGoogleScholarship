@@ -145,11 +145,6 @@ public class MovieListView extends Fragment
     }
 
     @Override
-    public void onToggleFavClick(int index, Movie movie) {
-        // do nothing here for now because we haven't implemented the fav button
-    }
-
-    @Override
     public void addMovies(List<Movie> movies) {
         if (movies != null && !movies.isEmpty()) {
             mAdapter.addItems(movies);

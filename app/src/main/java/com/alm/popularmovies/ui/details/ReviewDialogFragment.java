@@ -1,7 +1,6 @@
 package com.alm.popularmovies.ui.details;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,13 +47,10 @@ public class ReviewDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(mReview.getAuthor())
                 .setMessage(mReview.getContent())
-                .setNeutralButton("View original", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mReview.getUrl()));
-                        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
-                            startActivity(intent);
-                    }
+                .setNeutralButton("View original", (dialogInterface, i) -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mReview.getUrl()));
+                    if (intent.resolveActivity(getActivity().getPackageManager()) != null)
+                        startActivity(intent);
                 }).setPositiveButton(android.R.string.ok, null)
                 .create();
     }

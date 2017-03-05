@@ -13,13 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alm.popularmovies.adapters.MoviesAdapter;
 import com.alm.popularmovies.R;
-import com.alm.popularmovies.loaders.FavoritesLoader;
+import com.alm.popularmovies.adapters.MoviesAdapter;
 import com.alm.popularmovies.api.model.Movie;
-import com.alm.popularmovies.utils.DbUtils;
+import com.alm.popularmovies.loaders.FavoritesLoader;
 import com.alm.popularmovies.provider.MovieContract;
 import com.alm.popularmovies.utils.Utils;
 
@@ -47,8 +45,6 @@ public class FavoritesFragment extends Fragment implements
     public TextView mErrorView;
     @BindView(R.id.rv_fav)
     public RecyclerView mRecyclerView;
-
-    private boolean ignoreUpdate = false;
 
     public static FavoritesFragment create() {
         return new FavoritesFragment();
@@ -84,10 +80,7 @@ public class FavoritesFragment extends Fragment implements
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            if (!ignoreUpdate) {
-                getLoaderManager().restartLoader(LOADER_ID, null, FavoritesFragment.this);
-                ignoreUpdate = false;
-            }
+            getLoaderManager().restartLoader(LOADER_ID, null, FavoritesFragment.this);
         }
     };
 
@@ -105,7 +98,6 @@ public class FavoritesFragment extends Fragment implements
         mRecyclerView.setHasFixedSize(true);
 
         mAdapter = new MoviesAdapter(getActivity(), this);
-        mAdapter.setFav(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -129,25 +121,6 @@ public class FavoritesFragment extends Fragment implements
     @Override
     public void onRecyclerItemClick(int index, Movie movie) {
         Utils.navigateToDetails(getActivity(), movie);
-    }
-
-    @Override
-    public void onToggleFavClick(int index, Movie movie) {
-        // We are in the fav screen so we have to mark this movie as not fav
-
-        if (DbUtils.removeMovie(getActivity().getContentResolver(), movie.id)) {
-            ignoreUpdate = true;
-            mAdapter.removeItem(index);
-            if (mAdapter.getItemCount() == 0) {
-                // special cas in which we had only 1 item and we delete it
-                // then the adapter is empty so show the error message
-                showError();
-            }
-        } else {
-            Toast.makeText(getActivity(),
-                    getString(R.string.failed_remove_fav),
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override

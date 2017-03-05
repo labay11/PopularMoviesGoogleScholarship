@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="72dp"
-    android:gravity="center_vertical">
+              android:layout_height="wrap_content"
+              android:maxHeight="80dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/list_item_tv_author"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        tools:text="Rüyééééééééééééé"
-        android:layout_marginBottom="4dp"/>
+        android:text="@string/placeholder_title"/>
 
     <TextView
         android:layout_width="match_parent"
