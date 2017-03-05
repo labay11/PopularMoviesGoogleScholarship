@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -47,7 +46,6 @@ import butterknife.OnClick;
  * Created by A. Labay on 26/02/17.
  * As part of the project PopularMovies.
  */
-
 public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
 
     public static final String EXTRA_MOVIE = "extra_movie";
@@ -99,13 +97,13 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
         setContentView(R.layout.activity_details);
 
         setupToolbar();
-        if (Utils.isPortrait(this))
+        if (Utils.isPortrait(this)) {
             setupPosterSize();
+            // only exists in vertical
+            mTitleView = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        }
 
         ButterKnife.bind(this);
-
-        // only exists when vertical
-        mTitleView = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
 
         if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_MOVIE)) {
             Intent intent = getIntent();
@@ -168,7 +166,6 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
     private void setupRecyclerViewReviews() {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         mReviewsRv.setLayoutManager(manager);
-        //mReviewsRv.setHasFixedSize(true);
 
         mReviewsAdapter = new ReviewsAdapter(this, mReviewOnItemClickListener);
         mReviewsRv.setAdapter(mReviewsAdapter);
@@ -197,16 +194,11 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
 
     @Override
     public void showContent(Movie movie) {
-        /*if (Utils.isPortrait(this))
-            mTitleView.setTitle(movie.title);
-        else
-            ((TextView) findViewById(R.id.tv_title)).setText(movie.title);*/
         mTitleTv.setText(movie.original_title);
 
         if (movie.release_date != null)
             mDateTv.setText(DateFormat.getDateInstance().format(movie.release_date));
 
-        Log.i("DetailsView", "vote -> " + movie.vote_average);
         mRatingBar.setRating((float) (movie.vote_average / 2.0));
 
         if (!movie.hasOverview())
@@ -230,7 +222,7 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
                                     int textColor = palette.getLightVibrantColor(Color.WHITE);
                                     mTitleTv.setTextColor(textColor);
                                     int backColor = palette.getDarkMutedColor(mPrimaryColor);
-                                    if (Utils.isPortrait(DetailsView.this))
+                                    if (mTitleView != null) // we are in portrait mode
                                         mTitleView.setContentScrimColor(backColor);
                                     else
                                         mAppBar.setBackgroundColor(backColor);

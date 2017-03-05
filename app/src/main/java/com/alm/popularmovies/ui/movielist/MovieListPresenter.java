@@ -4,15 +4,14 @@ package com.alm.popularmovies.ui.movielist;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.alm.popularmovies.PopularMoviesApp;
 import com.alm.popularmovies.R;
-import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.api.TheMovieDbService;
 import com.alm.popularmovies.api.model.Movie;
 import com.alm.popularmovies.api.model.Movies;
+import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.utils.NetworkUtils;
 import com.alm.popularmovies.utils.PreferenceUtils;
 
@@ -96,10 +95,7 @@ public class MovieListPresenter implements IMovieList.Presenter {
             }
             return;
         }
-        Log.i(TAG, "load() -> " + page);
 
-        /*Bundle bundle = new Bundle(1);
-        bundle.putInt("page", page);*/
         mPage = page;
 
         Observable<Movies> observable;
@@ -116,26 +112,22 @@ public class MovieListPresenter implements IMovieList.Presenter {
                     @Override
                     public void onStart() {
                         super.onStart();
-                        Log.i(TAG, "observable -> onStart()");
                         mView.showLoading(mPage);
                     }
 
                     @Override
                     public void onCompleted() {
-                        Log.i(TAG, "observable -> onCompleted()");
                         mView.hideLoading();
                         mSubscription = null;
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.w(TAG, "Error loading data.", e);
                         mView.showError();
                     }
 
                     @Override
                     public void onNext(Movies movies) {
-                        Log.i(TAG, "observable -> onNext() -> " + movies);
                         if (movies != null) {
                             mView.addMovies(movies.results);
                         } else if (mView.hasMovies()) {

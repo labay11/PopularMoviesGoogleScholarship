@@ -5,4 +5,18 @@
     <color name="colorAccent">#FFD740</color>
 
     <color name="divider">#607D8B</color>
+
+    <color name="red_400">#EF5350</color>
+    <color name="deep_purple_400">#7E57C2</color>
+    <color name="lime_400">#D4E157</color>
+    <color name="cyan_400">#26C6DA</color>
+    <color name="blue_grey_400">#78909C</color>
+
+    <integer-array name="placeholder_list_colors">
+        <item>@color/red_400</item>
+        <item>@color/deep_purple_400</item>
+        <item>@color/cyan_400</item>
+        <item>@color/blue_grey_400</item>
+        <item>@color/lime_400</item>
+    </integer-array>
 </resources>

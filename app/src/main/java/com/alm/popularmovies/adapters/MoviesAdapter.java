@@ -1,6 +1,7 @@
 package com.alm.popularmovies.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,6 @@ import java.util.Collection;
  * Created by A. Labay on 24/01/17.
  * As part of the project PopularMovies.
  */
-
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolder> {
 
     private final ArrayList<Movie> mItems = new ArrayList<>();
@@ -28,10 +28,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
     private OnRecyclerItemClickListener mItemClickListener;
 
+    private final int PLACEHOLDER_COLORS[];
+
     public MoviesAdapter(Context context,
                          OnRecyclerItemClickListener onRecyclerItemClickListener) {
         mContext = context;
         mItemClickListener = onRecyclerItemClickListener;
+
+        PLACEHOLDER_COLORS = context.getResources().getIntArray(R.array.placeholder_list_colors);
     }
 
     @Override
@@ -49,6 +53,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
         Picasso.with(mContext)
                 .load(url)
+                .placeholder(new ColorDrawable(PLACEHOLDER_COLORS[position % 5]))
                 .into(holder.mImageView);
     }
 
