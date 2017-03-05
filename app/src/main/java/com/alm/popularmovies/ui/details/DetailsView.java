@@ -1,6 +1,7 @@
 package com.alm.popularmovies.ui.details;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,7 +11,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,10 +27,10 @@ import com.alm.popularmovies.R;
 import com.alm.popularmovies.adapters.BaseRecyclerAdapter;
 import com.alm.popularmovies.adapters.ReviewsAdapter;
 import com.alm.popularmovies.adapters.VideosAdapter;
-import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.api.model.Movie;
 import com.alm.popularmovies.api.model.Review;
 import com.alm.popularmovies.api.model.Video;
+import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.utils.Utils;
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
@@ -83,6 +83,8 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
 
     @BindColor(R.color.colorPrimary)
     public int mPrimaryColor;
+    @BindColor(R.color.colorAccent)
+    public int mAccentColor;
 
     public CollapsingToolbarLayout mTitleView;
 
@@ -199,7 +201,7 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
             mTitleView.setTitle(movie.title);
         else
             ((TextView) findViewById(R.id.tv_title)).setText(movie.title);*/
-        mTitleTv.setText(movie.title);
+        mTitleTv.setText(movie.original_title);
 
         if (movie.release_date != null)
             mDateTv.setText(DateFormat.getDateInstance().format(movie.release_date));
@@ -224,21 +226,21 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
                 .load(url)
                 .into(mIvPoster, PicassoPalette.with(url, mIvPoster)
                         .use(PicassoPalette.Profile.MUTED_DARK)
-                            .intoCallBack(new PicassoPalette.CallBack() {
-                                @Override
-                                public void onPaletteLoaded(Palette palette) {
-                                    if (palette != null) {
-                                        int textColor = palette.getLightVibrantColor(Color.WHITE);
-                                        mTitleTv.setTextColor(textColor);
-                                        int backColor = palette.getDarkMutedColor(mPrimaryColor);
-                                        if (Utils.isPortrait(DetailsView.this))
-                                            mTitleView.setContentScrimColor(backColor);
-                                        else
-                                            mAppBar.setBackgroundColor(backColor);
+                            .intoCallBack(palette -> {
+                                if (palette != null) {
+                                    int textColor = palette.getLightVibrantColor(Color.WHITE);
+                                    mTitleTv.setTextColor(textColor);
+                                    int backColor = palette.getDarkMutedColor(mPrimaryColor);
+                                    if (Utils.isPortrait(DetailsView.this))
+                                        mTitleView.setContentScrimColor(backColor);
+                                    else
+                                        mAppBar.setBackgroundColor(backColor);
 
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                            Utils.setStatusBarColor(DetailsView.this, backColor);
-                                    }
+                                    fab.setBackgroundTintList(ColorStateList
+                                            .valueOf(palette.getLightMutedColor(mAccentColor)));
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                                        Utils.setStatusBarColor(DetailsView.this, backColor);
                                 }
                             }));
     }

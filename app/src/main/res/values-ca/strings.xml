@@ -23,7 +23,4 @@
     <string name="reviews">Reviews</string>
     <string name="videos">Vídeo</string>
 
-    <string name="placeholder_title"/>
-    <string name="placeholder_author"/>
-    <string name="placeholder_content"/>
 </resources>

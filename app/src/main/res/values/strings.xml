@@ -23,7 +23,12 @@
     <string name="no_reviews">No reviews found</string>
     <string name="no_videos">No videos found</string>
 
-    <string name="placeholder_title"/>
-    <string name="placeholder_author"/>
-    <string name="placeholder_content"/>
+    <string name="placeholder_title" translatable="false"/>
+    <string name="placeholder_author" translatable="false"/>
+    <string name="placeholder_content" translatable="false"/>
+
+    <string name="crash_dialog_title" translatable="false">PopularMovies has crashed</string>
+    <string name="crash_dialog_text" translatable="false">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK.</string>
+    <string name="crash_dialog_comment_prompt" translatable="false">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast" translatable="false">Thank you!</string>
 </resources>

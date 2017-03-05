@@ -45,9 +45,10 @@ public class FavoritesLoader extends TaskLoader<List<Movie>> {
                     cursor.getInt(1),
                     cursor.getString(2),
                     cursor.getString(3),
-                    cursor.getDouble(4),
-                    cursor.getLong(5),
-                    cursor.getString(6)
+                    cursor.getString(4),
+                    cursor.getDouble(5),
+                    cursor.getLong(6),
+                    cursor.getString(7)
             ));
         } while (cursor.moveToNext());
 

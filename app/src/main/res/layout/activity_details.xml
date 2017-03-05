@@ -54,8 +54,7 @@
                 android:paddingEnd="16dp"
                 android:paddingLeft="64dp"
                 android:paddingRight="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:gravity="center_vertical"
                 app:layout_collapseMode="pin"/>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

@@ -24,6 +24,7 @@ public class MovieContract {
 
         public static final String COLUMN_MOVIE_ID = "movie_id";
         public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_ORIGINAL_TITLE = "original_title";
         public static final String COLUMN_POSTER_PATH = "poster";
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_RELEASE_DATE = "COLUMN_RELEASE_DATE";
@@ -33,6 +34,7 @@ public class MovieContract {
                 _ID,
                 COLUMN_MOVIE_ID,
                 COLUMN_TITLE,
+                COLUMN_ORIGINAL_TITLE,
                 COLUMN_POSTER_PATH,
                 COLUMN_VOTE_AVERAGE,
                 COLUMN_RELEASE_DATE,

@@ -19,6 +19,8 @@ public class Movie implements Parcelable {
 
     public String title;
 
+    public String original_title;
+
     public String poster_path;
 
     public double vote_average;
@@ -30,30 +32,7 @@ public class Movie implements Parcelable {
     public Movie(long _id,
                  int id,
                  String title,
-                 String poster_path) {
-        this._id = _id;
-        this.id = id;
-        this.title = title;
-        this.poster_path = poster_path;
-    }
-
-    public Movie(int id,
-                 String title,
-                 String poster_path,
-                 double vote_average,
-                 Date release_date,
-                 String overview) {
-        this.id = id;
-        this.title = title;
-        this.poster_path = poster_path;
-        this.vote_average = vote_average;
-        this.release_date = release_date;
-        this.overview = overview;
-    }
-
-    public Movie(long _id,
-                 int id,
-                 String title,
+                 String original_title,
                  String poster_path,
                  double vote_average,
                  long release_date,
@@ -61,6 +40,7 @@ public class Movie implements Parcelable {
         this._id = _id;
         this.id = id;
         this.title = title;
+        this.original_title = original_title;
         this.poster_path = poster_path;
         this.vote_average = vote_average;
         this.release_date = new Date(release_date);
@@ -71,6 +51,7 @@ public class Movie implements Parcelable {
         _id = in.readLong();
         id = in.readInt();
         title = in.readString();
+        original_title = in.readString();
         poster_path = in.readString();
         vote_average = in.readDouble();
         release_date = new Date(in.readLong());
@@ -90,6 +71,7 @@ public class Movie implements Parcelable {
         dest.writeLong(_id);
         dest.writeInt(id);
         dest.writeString(title);
+        dest.writeString(original_title);
         dest.writeString(poster_path);
         dest.writeDouble(vote_average);
         dest.writeLong(release_date.getTime());

@@ -91,6 +91,10 @@
     @retrofit2.http.* <methods>;
 }
 
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
+
 -dontwarn okio.**
 
 ## GSON 2.2.4 specific rules ##

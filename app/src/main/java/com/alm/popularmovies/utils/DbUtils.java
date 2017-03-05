@@ -19,6 +19,7 @@ public class DbUtils {
         ContentValues values = new ContentValues();
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.id);
         values.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.title);
+        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.original_title);
         values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.poster_path);
         values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.vote_average);
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.release_date.getTime());

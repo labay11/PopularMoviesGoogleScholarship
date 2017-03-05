@@ -13,13 +13,14 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movies.db";
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     private static final String CREATE_TABLE_FAVORITES = "CREATE TABLE " +
             MovieContract.MovieEntry.TABLE_NAME + "(" +
             MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL UNIQUE," +
             MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL," +
+            MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL," +
             MovieContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT," +
             MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL DEFAULT 0," +
             MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " INTEGER," +
@@ -38,6 +39,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldv, int newv) {
         switch (newv) {
+            case 3: // added original title column
             case 2: // added columns vote_average, release_date & overview -> recreate table
                 sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieEntry.TABLE_NAME);
                 onCreate(sqLiteDatabase);
