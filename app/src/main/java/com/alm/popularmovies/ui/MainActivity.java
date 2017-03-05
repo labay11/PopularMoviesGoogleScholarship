@@ -54,9 +54,13 @@ public class MainActivity extends AppCompatActivity
 
                 // Commit the transaction
                 transaction.commit();
+
+                getSupportActionBar().setTitle(savedInstanceState.getString("title"));
             }
         } else {
             loadFragment(id);
+            MenuItem item = navigationView.getMenu().findItem(id);
+            getSupportActionBar().setTitle(item.getTitle());
         }
     }
 
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         if (mFragment != null) {
             //Save the fragment's instance
             getSupportFragmentManager().putFragment(outState, "fragmentSavedState", mFragment);
+            outState.putString("title", getSupportActionBar().getTitle().toString());
         }
     }
 
@@ -93,7 +98,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity
             showAboutDialog();
         } else {
             loadFragment(id);
+            getSupportActionBar().setTitle(item.getTitle());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
