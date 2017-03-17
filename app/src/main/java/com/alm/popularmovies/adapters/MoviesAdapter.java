@@ -2,38 +2,30 @@ package com.alm.popularmovies.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.widget.RecyclerView;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.alm.popularmovies.R;
 import com.alm.popularmovies.api.model.Movie;
 import com.alm.popularmovies.utils.ApiUtils;
+import com.alm.popularmovies.utils.DbUtils;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by A. Labay on 24/01/17.
  * As part of the project PopularMovies.
  */
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolder> {
-
-    private final ArrayList<Movie> mItems = new ArrayList<>();
-
-    private Context mContext;
-
-    private OnRecyclerItemClickListener mItemClickListener;
+public class MoviesAdapter extends BaseRecyclerAdapter<Movie, MoviesAdapter.MovieHolder> {
 
     private final int PLACEHOLDER_COLORS[];
 
-    public MoviesAdapter(Context context,
-                         OnRecyclerItemClickListener onRecyclerItemClickListener) {
-        mContext = context;
-        mItemClickListener = onRecyclerItemClickListener;
+    public MoviesAdapter(Context context, OnItemClickListener<Movie> itemClickListener) {
+        super(context, itemClickListener);
 
         PLACEHOLDER_COLORS = context.getResources().getIntArray(R.array.placeholder_list_colors);
     }
@@ -45,7 +37,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
                 .inflate(R.layout.list_item_movie, parent, false));
     }
 
-    @Override
+    /*@Override
     public void onBindViewHolder(MovieHolder holder, int position) {
         Movie movie = mItems.get(position);
 
@@ -55,60 +47,67 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
                 .load(url)
                 .placeholder(new ColorDrawable(PLACEHOLDER_COLORS[position % 5]))
                 .into(holder.mImageView);
-    }
 
-    @Override
-    public int getItemCount() {
-        return mItems.size();
-    }
+        holder.toggleFav(DbUtils.isMovieFav(mContext.getContentResolver(), movie.id));
+    }*/
 
-    public void setItems(Collection<Movie> movies) {
-        mItems.clear();
-        if (movies != null) mItems.addAll(movies);
-        notifyDataSetChanged();
-    }
+    class MovieHolder extends BaseRecyclerAdapter.BaseHolder<Movie>
+            implements View.OnClickListener {
 
-    public void addItems(Collection<Movie> movies) {
-        if (movies != null) {
-            mItems.addAll(movies);
-            notifyItemRangeInserted(mItems.size()-movies.size(), mItems.size());
-        }
-    }
+        private ImageView mImageView;
 
-    public ArrayList<Movie> getItems() {
-        return mItems;
-    }
+        private ImageButton mImageButton;
 
-    public void removeItem(int pos) {
-        mItems.remove(pos);
-        notifyItemRemoved(pos);
-    }
+        private boolean isFav;
 
-    public void clear() {
-        mItems.clear();
-        notifyDataSetChanged();
-    }
-
-    class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public ImageView mImageView;
-
-        public MovieHolder(View itemView) {
+        MovieHolder(View itemView) {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_image);
+            mImageButton = (ImageButton) itemView.findViewById(R.id.list_item_fav);
+
+            mImageButton.setOnClickListener(view -> {
+                Movie movie = get(getAdapterPosition());
+                if (isFav) {
+                    if (DbUtils.removeMovie(mContext.getContentResolver(), movie.id))
+                        toggleFav(false);
+                    else
+                        Toast.makeText(mContext, R.string.failed_remove_fav, Toast.LENGTH_SHORT).show();
+                } else {
+                    Uri uri = DbUtils.insertMovie(mContext.getContentResolver(), movie);
+                    if (uri != null)
+                        toggleFav(true);
+                    else
+                        Toast.makeText(mContext, R.string.failed_insert_fav, Toast.LENGTH_SHORT).show();
+
+                }
+            });
 
             itemView.setOnClickListener(this);
         }
 
         @Override
+        public void bind(Movie item) {
+            String url = ApiUtils.getImageUrl(item.poster_path, ApiUtils.IMAGE_SIZE_NORMAL);
+
+            Picasso.with(mContext)
+                    .load(url)
+                    .placeholder(new ColorDrawable(PLACEHOLDER_COLORS[getAdapterPosition() % 5]))
+                    .into(mImageView);
+
+            toggleFav(DbUtils.isMovieFav(mContext.getContentResolver(), item.id));
+        }
+
+        @Override
         public void onClick(View view) {
             final int index = getAdapterPosition();
-            mItemClickListener.onRecyclerItemClick(index, mItems.get(index));
+            mItemClickListener.onItemClick(view, index, get(index));
         }
-    }
 
-    public interface OnRecyclerItemClickListener {
-        void onRecyclerItemClick(int index, Movie movie);
+        private void toggleFav(boolean isFav) {
+            this.isFav = isFav;
+            mImageButton.setImageResource(isFav ?
+                    R.drawable.ic_favorite : R.drawable.ic_not_favorite);
+        }
     }
 }

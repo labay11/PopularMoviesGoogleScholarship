@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.alm.popularmovies.R;
+import com.alm.popularmovies.adapters.BaseRecyclerAdapter;
 import com.alm.popularmovies.adapters.MoviesAdapter;
 import com.alm.popularmovies.api.model.Movie;
 import com.alm.popularmovies.utils.EndlessRecyclerViewOnScrollListener;
@@ -30,7 +31,7 @@ import butterknife.OnClick;
 
 public class MovieListView extends Fragment
         implements IMovieList.View,
-        MoviesAdapter.OnRecyclerItemClickListener {
+        BaseRecyclerAdapter.OnItemClickListener<Movie> {
 
     private int mType = -1;
 
@@ -140,14 +141,14 @@ public class MovieListView extends Fragment
     }
 
     @Override
-    public void onRecyclerItemClick(int index, Movie movie) {
-        Utils.navigateToDetails(getActivity(), movie);
+    public void onItemClick(View itemView, int pos, Movie item) {
+        Utils.navigateToDetails(getActivity(), item);
     }
 
     @Override
     public void addMovies(List<Movie> movies) {
         if (movies != null && !movies.isEmpty()) {
-            mAdapter.addItems(movies);
+            mAdapter.addAll(movies);
             mRecyclerView.setVisibility(View.VISIBLE);
             mErrorView.setVisibility(View.GONE);
             hideLoading();

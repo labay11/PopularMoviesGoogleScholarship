@@ -19,11 +19,15 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseRecyclerAdapter.Base
 
     private ArrayList<T> mItems = new ArrayList<>();
 
+    protected Context mContext;
+
     protected LayoutInflater mInflater;
 
     protected OnItemClickListener<T> mItemClickListener;
 
-    public BaseRecyclerAdapter(Context context, OnItemClickListener<T> itemClickListener) {
+    public BaseRecyclerAdapter(Context context,
+                               OnItemClickListener<T> itemClickListener) {
+        this.mContext = context;
         mInflater = LayoutInflater.from(context);
         mItemClickListener = itemClickListener;
     }
@@ -73,6 +77,12 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseRecyclerAdapter.Base
             throw new IndexOutOfBoundsException();
 
         return mItems.get(pos);
+    }
+
+    public ArrayList<T> getItems() {
+        ArrayList<T> items = new ArrayList<>();
+        items.addAll(mItems);
+        return items;
     }
 
     public void move(int from, int to) {

@@ -17,8 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TheMovieDbServiceImpl {
 
-    public static final String ENDPOINT = "https://api.themoviedb.org/3/";
-
     public static TheMovieDbService create() {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor()
@@ -30,7 +28,7 @@ public class TheMovieDbServiceImpl {
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ENDPOINT)
+                .baseUrl(ApiUtils.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(client)

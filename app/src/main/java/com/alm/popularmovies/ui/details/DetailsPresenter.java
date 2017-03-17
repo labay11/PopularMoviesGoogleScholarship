@@ -5,27 +5,27 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.alm.popularmovies.PopularMoviesApp;
 import com.alm.popularmovies.R;
 import com.alm.popularmovies.api.TheMovieDbService;
+import com.alm.popularmovies.api.model.Credits;
 import com.alm.popularmovies.api.model.Movie;
 import com.alm.popularmovies.api.model.Review;
-import com.alm.popularmovies.api.model.Reviews;
 import com.alm.popularmovies.api.model.Video;
-import com.alm.popularmovies.api.model.Videos;
 import com.alm.popularmovies.utils.ApiUtils;
 import com.alm.popularmovies.utils.DbUtils;
 import com.alm.popularmovies.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -40,9 +40,10 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
     private Movie mMovie = null;
     private final ArrayList<Video> mVideos = new ArrayList<>();
     private final ArrayList<Review> mReviews = new ArrayList<>();
+    private Credits.Crew mDirector = null;
     private boolean mIsFav;
 
-    private Subscription mVideosSubscription, mReviewsSubscription;
+    private Subscription mVideosSubscription, mReviewsSubscription, mCreditsSubscription;
 
     public DetailsPresenter(Context context,
                             IDetailsMVP.View view) {
@@ -66,58 +67,62 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
 
         ArrayList<Review> savedRvs = state.getParcelableArrayList("my_reviews");
         loadReviews(savedRvs);
+
+        Credits.Crew savedDirector = state.getParcelable("my_director");
+        loadDirector(savedDirector);
     }
 
     private void loadFavInfo() {
-        mIsFav = Utils.isMovieFav(mContext.getContentResolver(), mMovie.id);
+        mIsFav = DbUtils.isMovieFav(mContext.getContentResolver(), mMovie.id);
 
         mView.toggleFav(mIsFav);
     }
 
     private void loadVideos(ArrayList<Video> videos) {
-        TheMovieDbService service = ((PopularMoviesApp) mContext.getApplicationContext())
-                .getService();
-
         if (videos == null || videos.isEmpty()) {
+            TheMovieDbService service = ((PopularMoviesApp) mContext.getApplicationContext())
+                    .getService();
+
             mVideosSubscription = service.getVideos(mMovie.id, ApiUtils.API_KEY)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map(vds -> vds != null ? vds.results : null)
                     .subscribe(mVideosSubscriber);
         } else {
             mVideosSubscription = Observable.just(videos)
-                    .map(new Func1<ArrayList<Video>, Videos>() {
-                        @Override
-                        public Videos call(ArrayList<Video> videos) {
-                            Videos vds = new Videos();
-                            vds.results = new ArrayList<>();
-                            vds.results.addAll(videos);
-                            return vds;
-                        }
-                    })
                     .subscribe(mVideosSubscriber);
         }
     }
 
     private void loadReviews(ArrayList<Review> reviews) {
-        TheMovieDbService service = ((PopularMoviesApp) mContext.getApplicationContext())
-                .getService();
-
         if (reviews == null || reviews.isEmpty()) {
+            TheMovieDbService service = ((PopularMoviesApp) mContext.getApplicationContext())
+                    .getService();
+
             mReviewsSubscription = service.getReviews(mMovie.id, ApiUtils.API_KEY, 1)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map(rvs -> rvs != null ? rvs.results : null)
                     .subscribe(mReviewsSubscriber);
         } else {
             mReviewsSubscription = Observable.just(reviews)
-                    .map(new Func1<ArrayList<Review>, Reviews>() {
-                        @Override
-                        public Reviews call(ArrayList<Review> reviews) {
-                            Reviews rvs = new Reviews();
-                            rvs.results = new ArrayList<>();
-                            rvs.results.addAll(reviews);
-                            return rvs;
-                        }
-                    }).subscribe(mReviewsSubscriber);
+                    .subscribe(mReviewsSubscriber);
+        }
+    }
+
+    private void loadDirector(Credits.Crew director) {
+        if (director == null || TextUtils.isEmpty(director.name)) {
+            TheMovieDbService service = ((PopularMoviesApp) mContext.getApplicationContext())
+                    .getService();
+
+            mCreditsSubscription = service.getCredits(mMovie.id, ApiUtils.API_KEY)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(rvs -> rvs != null ? rvs.getDirector() : null)
+                    .subscribe(mCreditsSubscriber);
+        } else {
+            mCreditsSubscription = Observable.just(director)
+                    .subscribe(mCreditsSubscriber);
         }
     }
 
@@ -136,6 +141,8 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
             mVideosSubscription.unsubscribe();
         if (mReviewsSubscription != null)
             mReviewsSubscription.unsubscribe();
+        if (mCreditsSubscription != null)
+            mCreditsSubscription.unsubscribe();
     }
 
     @Override
@@ -168,7 +175,7 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
             mView.toggleFav(mIsFav);
         } else {
             Toast.makeText(mContext,
-                    mContext.getString(R.string.failed_remove_fav),
+                    mIsFav ? R.string.failed_remove_fav : R.string.failed_insert_fav,
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -178,8 +185,8 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
         return mIsFav;
     }
 
-    private final Subscriber<Videos> mVideosSubscriber
-            = new Subscriber<Videos>() {
+    private final Subscriber<List<Video>> mVideosSubscriber
+            = new Subscriber<List<Video>>() {
 
         @Override
         public void onStart() {
@@ -199,9 +206,9 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
         }
 
         @Override
-        public void onNext(Videos videos) {
-            if (videos != null && videos.results != null) {
-                mVideos.addAll(videos.results);
+        public void onNext(List<Video> videos) {
+            if (videos != null && !videos.isEmpty()) {
+                mVideos.addAll(videos);
                 mView.showVideos(mVideos);
             } else {
                 mView.showVideos(null);
@@ -209,8 +216,8 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
         }
     };
 
-    private final Subscriber<Reviews> mReviewsSubscriber
-            = new Subscriber<Reviews>() {
+    private final Subscriber<List<Review>> mReviewsSubscriber
+            = new Subscriber<List<Review>>() {
 
         @Override
         public void onStart() {
@@ -230,13 +237,40 @@ public class DetailsPresenter implements IDetailsMVP.Presenter {
         }
 
         @Override
-        public void onNext(Reviews reviews) {
-            if (reviews != null && reviews.results != null) {
-                mReviews.addAll(reviews.results);
+        public void onNext(List<Review> reviews) {
+            if (reviews != null && !reviews.isEmpty()) {
+                mReviews.addAll(reviews);
                 mView.showReviews(mReviews);
             } else {
                 mView.showReviews(null);
             }
+        }
+    };
+
+    private final Subscriber<Credits.Crew> mCreditsSubscriber
+            = new Subscriber<Credits.Crew>() {
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            mView.showLoadingReviews();
+        }
+
+        @Override
+        public void onCompleted() {
+            mCreditsSubscription = null;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.showDirector(null);
+            mCreditsSubscription = null;
+        }
+
+        @Override
+        public void onNext(Credits.Crew crew) {
+            mDirector = crew;
+            mView.showDirector(crew != null ? crew.name : null);
         }
     };
 }

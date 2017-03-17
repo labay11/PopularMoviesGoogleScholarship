@@ -1,6 +1,6 @@
 package com.alm.popularmovies.api;
 
-import com.alm.popularmovies.api.model.Movie;
+import com.alm.popularmovies.api.model.Credits;
 import com.alm.popularmovies.api.model.Movies;
 import com.alm.popularmovies.api.model.Reviews;
 import com.alm.popularmovies.api.model.Videos;
@@ -31,12 +31,6 @@ public interface TheMovieDbService {
             @Query("language") String language,
             @Query("page") int page);
 
-    @GET("movie/{movieId}")
-    Observable<Movie> getDetails(
-            @Path("movieId") int movieId,
-            @Query("api_key") String apiKey,
-            @Query("language") String language);
-
     @GET("movie/{movieId}/videos")
     Observable<Videos> getVideos(
             @Path("movieId") int movieId,
@@ -47,4 +41,16 @@ public interface TheMovieDbService {
             @Path("movieId") int movieId,
             @Query("api_key") String apiKey,
             @Query("page") int page);
+
+    @GET("movie/{movieId}/credits")
+    Observable<Credits> getCredits(
+            @Path("movieId") int movieId,
+            @Query("api_key") String apiKey);
+
+    @GET("search/movie")
+    Observable<Movies> search(
+            @Query("api_key") String apiKey,
+            @Query("query") String q,
+            @Query("region") String region,
+            @Query("language") String language);
 }

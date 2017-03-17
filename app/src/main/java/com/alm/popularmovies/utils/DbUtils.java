@@ -2,6 +2,7 @@ package com.alm.popularmovies.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -32,5 +33,27 @@ public class DbUtils {
         return cr.delete(MovieContract.MovieEntry.CONTENT_URI,
                         MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?",
                         new String[]{String.valueOf(movieId)}) > 0;
+    }
+
+    public static boolean isMovieFav(ContentResolver cr, int movieId) {
+        Cursor cursor = cr.query(MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?",
+                new String[]{"" + movieId},
+                null);
+
+        if (cursor == null)
+            return false;
+
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return false;
+        }
+
+        boolean isFav = cursor.getCount() > 0;
+
+        cursor.close();
+
+        return isFav;
     }
 }

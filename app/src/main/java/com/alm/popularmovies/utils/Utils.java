@@ -4,11 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -18,7 +16,6 @@ import android.view.WindowManager;
 
 import com.alm.popularmovies.R;
 import com.alm.popularmovies.api.model.Movie;
-import com.alm.popularmovies.provider.MovieContract;
 import com.alm.popularmovies.ui.details.DetailsView;
 
 /**
@@ -86,28 +83,6 @@ public class Utils {
         Intent intent = new Intent(context, DetailsView.class);
         intent.putExtra(DetailsView.EXTRA_MOVIE, movie);
         context.startActivity(intent);
-    }
-
-    public static boolean isMovieFav(ContentResolver cr, int movieId) {
-        Cursor cursor = cr.query(MovieContract.MovieEntry.CONTENT_URI,
-                null,
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?",
-                new String[]{"" + movieId},
-                null);
-
-        if (cursor == null)
-            return false;
-
-        if (!cursor.moveToFirst()) {
-            cursor.close();
-            return false;
-        }
-
-        boolean isFav = cursor.getCount() > 0;
-
-        cursor.close();
-
-        return isFav;
     }
 
     public static void openYouTubeVideo(Context context, String key) {

@@ -16,6 +16,7 @@ import com.alm.popularmovies.utils.NetworkUtils;
 import com.alm.popularmovies.utils.PreferenceUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -29,8 +30,6 @@ import rx.schedulers.Schedulers;
  */
 
 public class MovieListPresenter implements IMovieList.Presenter {
-
-    public static final String TAG = MovieListPresenter.class.getSimpleName();
 
     public static final int START_PAGE = 1;
 
@@ -107,7 +106,8 @@ public class MovieListPresenter implements IMovieList.Presenter {
         mSubscription = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Movies>() {
+                .map(mvs -> mvs != null ? mvs.results : null)
+                .subscribe(new Subscriber<List<Movie>>() {
 
                     @Override
                     public void onStart() {
@@ -127,9 +127,9 @@ public class MovieListPresenter implements IMovieList.Presenter {
                     }
 
                     @Override
-                    public void onNext(Movies movies) {
-                        if (movies != null) {
-                            mView.addMovies(movies.results);
+                    public void onNext(List<Movie> movies) {
+                        if (movies != null && !movies.isEmpty()) {
+                            mView.addMovies(movies);
                         } else if (mView.hasMovies()) {
                             // we get an error loading new page but we don't want
                             // to delete all the previous results so just stop loading

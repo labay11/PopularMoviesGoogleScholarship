@@ -45,6 +45,8 @@ public interface IDetailsMVP {
 
         void showReviews(List<Review> reviews);
 
+        void showDirector(String director);
+
         void toggleFav(boolean isFav);
     }
 }

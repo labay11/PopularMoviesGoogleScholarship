@@ -91,6 +91,23 @@ dependencies {
 
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.jakewharton.rxbinding:rxbinding:1.0.1'
+
 
     compile 'ch.acra:acra:4.9.0'
+
+    // test
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.squareup.retrofit2:retrofit-mock:2.2.0'
+    androidTestCompile ('com.squareup.okhttp:mockwebserver:2.7.0')
+    androidTestCompile ('com.android.support.test:runner:0.5')  {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ('com.android.support.test:rules:0.5') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.2.0'
 }

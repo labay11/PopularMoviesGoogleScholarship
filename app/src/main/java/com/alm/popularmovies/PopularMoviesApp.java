@@ -5,7 +5,6 @@ import android.app.Application;
 import com.alm.popularmovies.api.TheMovieDbService;
 import com.alm.popularmovies.api.TheMovieDbServiceImpl;
 
-import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
@@ -29,10 +28,10 @@ public class PopularMoviesApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (BuildConfig.DEBUG) {
+        /*if (BuildConfig.DEBUG) {
             // Initialise ACRA
             ACRA.init(this);
-        }
+        }*/
     }
 
     public synchronized TheMovieDbService getService() {

@@ -1,5 +1,6 @@
 package com.alm.popularmovies.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -12,10 +13,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.alm.popularmovies.R;
 import com.alm.popularmovies.ui.movielist.MovieListView;
+import com.alm.popularmovies.ui.search.SearchView;
 import com.alm.popularmovies.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity
@@ -160,5 +163,20 @@ public class MainActivity extends AppCompatActivity
             default:
                 return PreferenceUtils.SCREEN_POPULAR;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            startActivity(new Intent(this, SearchView.class));
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

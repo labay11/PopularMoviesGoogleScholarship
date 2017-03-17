@@ -22,5 +22,7 @@
     <string name="no_videos">Cap vídeo trobat</string>
     <string name="reviews">Reviews</string>
     <string name="videos">Vídeo</string>
+    <string name="unknown">Desconegut</string>
+    <string name="director">Director</string>
 
 </resources>

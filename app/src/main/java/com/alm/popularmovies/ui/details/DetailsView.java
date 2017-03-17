@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
@@ -78,6 +79,8 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
     public FloatingActionButton fab;
     @BindView(R.id.tv_title)
     public TextView mTitleTv;
+    @BindView(R.id.tv_director)
+    public TextView mDirectorTv;
 
     @BindColor(R.color.colorPrimary)
     public int mPrimaryColor;
@@ -234,6 +237,13 @@ public class DetailsView extends AppCompatActivity implements IDetailsMVP.View {
                                         Utils.setStatusBarColor(DetailsView.this, backColor);
                                 }
                             }));
+    }
+
+    @Override
+    public void showDirector(String director) {
+        mDirectorTv.setText(TextUtils.isEmpty(director) ?
+                getString(R.string.unknown) :
+                director);
     }
 
     @Override
